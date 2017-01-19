@@ -24,10 +24,11 @@ import os
 import re
 import sys
 import time
+from collections import namedtuple
 if sys.version_info[0] >= 3:
-    from urllib.parse import quote_plus, quote
+    from urllib.parse import quote_plus
 else:
-    from urllib import quote_plus, quote
+    from urllib import quote_plus
 
 # Force the local timezone to be GMT.
 os.environ['TZ'] = 'GMT'
@@ -175,7 +176,7 @@ Generating token...''' % (
     ''.join([str(x) for x in [self.salt] if x is not None]),
     ''.join([str(x) for x in [session_id] if x is not None]),
     ''.join([str(x) for x in [self.field_delimiter] if x is not None]),
-    ''.join([str(x) for x in [acl_delimiter] if x is not None]),
+    ''.join([str(x) for x in [self.acl_delimiter] if x is not None]),
     ''.join([str(x) for x in [self.escape_early] if x is not None])))
 
         hash_source = ''
@@ -219,7 +220,8 @@ Generating token...''' % (
             getattr(hashlib, self.algorithm.lower())).hexdigest()
         new_token += 'hmac=%s' % token_hmac
 
-        return '%s=%s' % (self.token_name, new_token)
+        Token = namedtuple('Token', 'name token')
+        return Token(name=self.token_name, token=new_token)
 
     def generateToken(self, url=None, acl=None, start_time=None, end_time=None, duration=None,
                       ip=None, payload=None, session_id=None):
