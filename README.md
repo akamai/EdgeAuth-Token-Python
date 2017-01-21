@@ -1,2 +1,2 @@
 # Akamai-TokenAuth-Python
-Akamai Token Authentication for Python
+Akamai Token Authorization for Python
