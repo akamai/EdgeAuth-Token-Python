@@ -29,11 +29,11 @@ else:
 import requests
 
 
-TA_HOSTNAME = "token-auth.akamaized.net"
+AT_HOSTNAME = "token-auth.akamaized.net"
 from spike import secrets
-TA_ENCRYPTION_KEY = secrets.TA_ENCRYPTION_KEY
-TA_TRANSITION_KEY = secrets.TA_TRANSITION_KEY
-TA_SALT = secrets.TA_SALT
+AT_ENCRYPTION_KEY = secrets.AT_ENCRYPTION_KEY
+AT_TRANSITION_KEY = secrets.AT_TRANSITION_KEY
+AT_SALT = secrets.AT_SALT
 DEFAULT_DURATION = 5 * 1000 # 5s
 
 
@@ -41,36 +41,36 @@ class TestAuthToken(unittest.TestCase):
 
     def setUp(self):
         # Test for Query String
-        self.ta = AuthToken(key=TA_ENCRYPTION_KEY, duration=DEFAULT_DURATION)
+        self.at = AuthToken(key=AT_ENCRYPTION_KEY, duration=DEFAULT_DURATION)
         
         # Test for Cookie
-        self.cta = AuthToken(key=TA_ENCRYPTION_KEY, algorithm='sha1', duration=DEFAULT_DURATION)
+        self.cat = AuthToken(key=AT_ENCRYPTION_KEY, algorithm='sha1', duration=DEFAULT_DURATION)
 
         # Test for Header
-        self.hta = AuthToken(key=TA_ENCRYPTION_KEY, algorithm='md5', duration=DEFAULT_DURATION)
+        self.hat = AuthToken(key=AT_ENCRYPTION_KEY, algorithm='md5', duration=DEFAULT_DURATION)
 
     def _token_setting(self, ttype, escape_early, transition):
         t = None
         if ttype == 'q':
-            t = self.ta
+            t = self.at
         elif ttype == 'c':
-            t = self.cta
+            t = self.cat
         elif ttype == 'h':
-            t = self.hta
+            t = self.hat
         
         if transition:
-            t.key = TA_TRANSITION_KEY
+            t.key = AT_TRANSITION_KEY
         else:
-            t.key = TA_ENCRYPTION_KEY
+            t.key = AT_ENCRYPTION_KEY
         
         t.escape_early = escape_early
 
     def _queryAssertEqual(self, path, expacted, query='', escape_early=True, transition=False,
                           payload=None, session_id=None):
         self._token_setting('q', escape_early, transition)
-        token = self.ta.generateToken(url=path, payload=None, session_id=None)
+        token = self.at.generateToken(url=path, payload=None, session_id=None)
         # print(path)
-        url = "http://{0}{1}{4}{2}={3}".format(TA_HOSTNAME, path, token.name, token.token,
+        url = "http://{0}{1}{4}{2}={3}".format(AT_HOSTNAME, path, token.name, token.token,
             '&' if '?' in path else '?')
         # print(url)
         response = requests.get(url)
@@ -80,8 +80,8 @@ class TestAuthToken(unittest.TestCase):
                            payload=None, session_id=None):
         self._token_setting('c', escape_early, transition)
 
-        token = self.cta.generateToken(url=path, payload=None, session_id=None)
-        url = "http://{0}{1}".format(TA_HOSTNAME, path)
+        token = self.cat.generateToken(url=path, payload=None, session_id=None)
+        url = "http://{0}{1}".format(AT_HOSTNAME, path)
         response = requests.get(url, cookies={token.name: token.token})
         self.assertEqual(expacted, response.status_code)
 
@@ -89,8 +89,8 @@ class TestAuthToken(unittest.TestCase):
                            payload=None, session_id=None):
         self._token_setting('h', escape_early, transition)
 
-        token = self.hta.generateToken(url=path, payload=None, session_id=None)
-        url = "http://{0}{1}".format(TA_HOSTNAME, path)
+        token = self.hat.generateToken(url=path, payload=None, session_id=None)
+        url = "http://{0}{1}".format(AT_HOSTNAME, path)
         response = requests.get(url, headers={token.name: token.token})
         self.assertEqual(expacted, response.status_code)
         
