@@ -19,11 +19,11 @@
 import unittest
 import sys
 if sys.version_info[0] >= 3:
-    sys.path.append("akamai/tokenauth")
-    from tokenauth import TokenAuth
+    sys.path.append("akamai/authtoken")
+    from authtoken import AuthToken
     from urllib.parse import quote_plus
 else:
-    from akamai.tokenauth import TokenAuth
+    from akamai.authtoken import AuthToken
     from urllib import quote_plus
 
 import requests
@@ -37,17 +37,17 @@ TA_SALT = secrets.TA_SALT
 DEFAULT_DURATION = 5 * 1000 # 5s
 
 
-class TestTokenAuth(unittest.TestCase):
+class TestAuthToken(unittest.TestCase):
 
     def setUp(self):
         # Test for Query String
-        self.ta = TokenAuth(key=TA_ENCRYPTION_KEY, duration=DEFAULT_DURATION)
+        self.ta = AuthToken(key=TA_ENCRYPTION_KEY, duration=DEFAULT_DURATION)
         
         # Test for Cookie
-        self.cta = TokenAuth(key=TA_ENCRYPTION_KEY, algorithm='sha1', duration=DEFAULT_DURATION)
+        self.cta = AuthToken(key=TA_ENCRYPTION_KEY, algorithm='sha1', duration=DEFAULT_DURATION)
 
         # Test for Header
-        self.hta = TokenAuth(key=TA_ENCRYPTION_KEY, algorithm='md5', duration=DEFAULT_DURATION)
+        self.hta = AuthToken(key=TA_ENCRYPTION_KEY, algorithm='md5', duration=DEFAULT_DURATION)
 
     def _token_setting(self, ttype, escape_early, transition):
         t = None

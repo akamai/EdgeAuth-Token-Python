@@ -47,7 +47,7 @@ class AkamaiTokenError(Exception):
         'Formatted error text.')
 
 
-class TokenAuth:
+class AuthToken:
     def __init__(self, token_type=None, token_name='__token__',
                  key=None, algorithm='sha256', salt=None,
                  start_time=None, end_time=None, duration=None,
