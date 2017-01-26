@@ -157,9 +157,15 @@ class TestAuthToken(unittest.TestCase):
         self._test_case_set(query_path, cookie_path, header_path, escape_early=False)
     
     def test_query_escape_on_ignore_yes_with_salt(self):
-        pass
-        # query_path="/salt"
-        # self._queryAssertEqual(query_path, 404)
+        query_salt_path = "/salt"
+        ats = self.at = AuthToken(key=AT_ENCRYPTION_KEY, salt=AT_SALT, duration=DEFAULT_DURATION)
+        token = ats.generateToken(url=query_salt_path)
+        url = "http://{0}{1}?{2}={3}".format(AT_HOSTNAME, query_salt_path, token.name, token.token)
+        response = requests.get(url)
+        self.assertEqual(404, response.status_code)
+        
+        
+        
         
 
 if __name__ == '__main__':
