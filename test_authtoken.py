@@ -164,11 +164,6 @@ class TestAuthToken(unittest.TestCase):
         response = requests.get(url)
         self.assertEqual(404, response.status_code)
         
-        
-        
-        
 
 if __name__ == '__main__':
     unittest.main()
-
-# https://docs.akamai.com/media-cloud/edgeauth/edgeauth-2.1/arch/design.xml

@@ -34,12 +34,12 @@ else:
 os.environ['TZ'] = 'GMT'
 
 
-class AkamaiTokenError(Exception):
+class AuthTokenError(Exception):
     def __init__(self, text):
         self._text = text
 
     def __str__(self):
-        return 'AkamaiTokenError:%s' % self._text
+        return 'AuthTokenError:%s' % self._text
 
     def _getText(self):
         return str(self)
@@ -60,7 +60,7 @@ class AuthToken:
         self.end_time = end_time
         self.duration = duration
         if key is None or len(key) <= 0:
-            raise AkamaiTokenError('You must provide a secret in order to '
+            raise AuthTokenError('You must provide a secret in order to '
                 'generate a new token.')
         self.key = key
         self.algorithm = algorithm
@@ -99,19 +99,19 @@ class AuthToken:
             try:
                 start_time = int(start_time)
             except:
-                raise AkamaiTokenError('start_time must be numeric or now')
+                raise AuthTokenError('start_time must be numeric or now')
 
         if end_time is not None:
             try:
                 end_time = int(end_time)
             except:
-                raise AkamaiTokenError('end_time must be numeric.')
+                raise AuthTokenError('end_time must be numeric.')
 
         if window_seconds is not None:
             try:
                 window_seconds = int(window_seconds)
             except:
-                raise AkamaiTokenError('window_seconds must be numeric.')
+                raise AuthTokenError('window_seconds must be numeric.')
 
         if end_time is None:
             if int(window_seconds or 0) > 0:
@@ -123,23 +123,23 @@ class AuthToken:
                 else:
                     end_time = start_time + window_seconds
             else:
-                raise AkamaiTokenError('You must provide an expiration time or '
+                raise AuthTokenError('You must provide an expiration time or '
                     'a duration window.')
         
         try:
             if end_time < start_time:
-                raise AkamaiTokenError('Token will have already expired.')
+                raise AuthTokenError('Token will have already expired.')
         except TypeError:
             pass
         
         if ((acl is None and url is None) or
             acl is not None and url is not None and
             (len(acl) <= 0) and (len(url) <= 0)):
-            raise AkamaiTokenError('You must provide a URL or an ACL.')
+            raise AuthTokenError('You must provide a URL or an ACL.')
 
         if (acl is not None and url is not None and
             (len(acl) > 0) and (len(url) > 0)):
-            raise AkamaiTokenError('You must provide a URL OR an ACL, '
+            raise AuthTokenError('You must provide a URL OR an ACL, '
                 'not both.')
 
         if self.debug:
@@ -212,7 +212,7 @@ Generating token...''' % (
             hash_source += 'salt=%s%c' % (self.salt, self.field_delimiter)
 
         if self.algorithm.lower() not in ('sha256', 'sha1', 'md5'):
-            raise AkamaiTokenError('Unknown algorithm')
+            raise AuthTokenError('Unknown algorithm')
 
         token_hmac = hmac.new(
             binascii.a2b_hex(self.key),
