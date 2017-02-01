@@ -90,4 +90,5 @@ ENV/
 
 # Others
 .DS_Store
+test/secrets.py
 spike/

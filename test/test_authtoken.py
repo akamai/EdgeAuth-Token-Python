@@ -17,20 +17,19 @@
 
 
 import unittest
-import sys
+import sys; sys.path.append("../akamai/authtoken")
 if sys.version_info[0] >= 3:
-    sys.path.append("akamai/authtoken")
-    from authtoken import AuthToken
     from urllib.parse import quote_plus
 else:
-    from akamai.authtoken import AuthToken
     from urllib import quote_plus
+
+from authtoken import AuthToken
 
 import requests
 
 
 AT_HOSTNAME = "token-auth.akamaized.net"
-from spike import secrets
+import secrets
 AT_ENCRYPTION_KEY = secrets.AT_ENCRYPTION_KEY
 AT_TRANSITION_KEY = secrets.AT_TRANSITION_KEY
 AT_SALT = secrets.AT_SALT

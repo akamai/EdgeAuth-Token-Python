@@ -5,7 +5,7 @@ Akamai-AuthToken: Akamai Authorization for Python
     :target: https://github.com/AstinCHOI/Akamai-AuthToken-Python/blob/master/LICENSE
 
 Akamai-AuthToken is Akamai Authorization Token in the HTTP Cookie, Query String and Header for a client. 
-You can configure it in Property Manager at https://control.akamai.com.
+You can configure it in the Property Manager at https://control.akamai.com.
 It's a behavior which is Auth Token 2.0 Verification.
 
 .. image:: https://github.com/AstinCHOI/akamai-asset/blob/master/authtoken/authtoken.png?raw=true
@@ -51,7 +51,7 @@ Example
 
 Usage
 -----
-**Class**
+**AuthToken Class**
 
 .. code-block:: python
 
@@ -60,40 +60,36 @@ Usage
             field_delimiter='~', acl_delimiter='!', escape_early=True, 
             escape_early_upper=False, debug=False)
 
-::
 
-    token_type - Select a preset. (Not Supported Yet)  
-    token_name - Parameter name for the new token.
-    key - Secret required to generate the token.
-    algorithm - Algorithm to use to generate the token. (sha1, sha256, or md5)
-    salt - Additional data validated by the token but NOT included in the token body. (It will be deprecated)
-    start_time - What is the start time. (Use string 'now' for the current time)
-    end_time - When does this token expire. 'end_time' overrides 'duration'
-    duration - How long is this token valid for.
-    field_delimiter - Character used to delimit token body fields.
-    acl_delimiter - Character used to delimit acl fields.
-    escape_early - Causes strings to be url encoded before being used.
-    escape_early_upper - Causes strings to be url encoded before being used.
-    debug - print all arguments
+token_type - Select a preset. (Not Supported Yet)  
+token_name - Parameter name for the new token.
+key - Secret required to generate the token.
+algorithm - Algorithm to use to generate the token. (sha1, sha256, or md5)
+salt - Additional data validated by the token but NOT included in the token body. (It will be deprecated)
+start_time - Literally start time (Use string 'now' for the current time)
+end_time - When does this token expire. 'end_time' overrides 'duration'
+duration - How long is this token valid for.
+field_delimiter - Character used to delimit token body fields.
+acl_delimiter - Character used to delimit acl fields.
+escape_early - Causes strings to be url encoded before being used.
+escape_early_upper - Causes strings to be url encoded before being used.
+debug - print all arguments
 
 
-**Method**
+**AuthToken's Method**
 
 .. code-block:: python
 
     generateToken(url=None, acl=None, start_time=None, end_time=None, 
                 duration=None, ip=None, payload=None, session_id=None)
 
-::
 
-    url - URL path
-    acl - Access control list delimited by ! [ie. /*]
-    start_time - What is the start time. (Use string 'now' for the current time)
-    end_time - When does this token expire. 'end_time' overrides 'duration'
-    duration - How long is this token valid for.
-    ip - IP Address to restrict this token to. (Troublesome in many cases (roaming, NAT, etc) so not often used)
-    payload - Additional text added to the calculated digest.
-    session_id - The session identifier for single use tokens or other advanced cases.
+url - URL path
+acl - Access control list delimited by ! [ie. /*]
+start_time, end_time, duration - Same as Authtoken's variables, but they overrides Authtoken's.
+ip - IP Address to restrict this token to. (Troublesome in many cases (roaming, NAT, etc) so not often used)
+payload - Additional text added to the calculated digest.
+session_id - The session identifier for single use tokens or other advanced cases.
 
 
 Author
