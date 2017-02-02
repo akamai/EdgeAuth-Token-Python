@@ -52,7 +52,7 @@ class AuthToken:
                  key=None, algorithm='sha256', salt=None,
                  start_time=None, end_time=None, duration=None,
                  field_delimiter='~', acl_delimiter='!',
-                 escape_early=True, escape_early_upper=False, debug=False):
+                 escape_early=True, escape_early_upper=False, verbose=False):
         
         self.token_type = token_type
         self.token_name = token_name
@@ -69,7 +69,7 @@ class AuthToken:
         self.acl_delimiter = acl_delimiter
         self.escape_early = escape_early
         self.escape_early_upper = escape_early_upper
-        self.debug = debug
+        self.verbose = verbose
 
     def escapeEarly(self, text):
         if self.escape_early or self.escape_early_upper:
@@ -142,7 +142,7 @@ class AuthToken:
             raise AuthTokenError('You must provide a URL OR an ACL, '
                 'not both.')
 
-        if self.debug:
+        if self.verbose:
             print('''
 Akamai Token Generation Parameters
 Token Type      : %s
