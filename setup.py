@@ -7,7 +7,7 @@ with open('README.rst', 'r') as f:
     readme = f.read()
 
 setup (
-    name = 'authtoken',
+    name = 'akamai-authtoken',
     version = '0.1.0',
     description = 'Akamai Authorization Token for Configuration',
     long_description = readme,

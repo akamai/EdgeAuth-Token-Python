@@ -1,8 +1,12 @@
 Akamai-AuthToken: Akamai Authorization for Python
 =================================================
 
+.. image:: https://img.shields.io/pypi/v/akamai-authtoken.svg
+    :target: https://pypi.python.org/pypi/akamai-authtoken
+
 .. image:: http://img.shields.io/:license-apache-blue.svg 
     :target: https://github.com/AstinCHOI/Akamai-AuthToken-Python/blob/master/LICENSE
+
 
 Akamai-AuthToken is Akamai Authorization Token in the HTTP Cookie, Query String and Header for a client. 
 You can configure it in the Property Manager at https://control.akamai.com.
@@ -101,6 +105,7 @@ Command
 -------
 
 .. code-block:: bash
+
     $ python cms_authtoken.py -k YourEncryptionKey -w 5000 -u /hello/world
 
 Use -h or --help option for more detail.
