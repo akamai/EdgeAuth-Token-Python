@@ -33,20 +33,20 @@ import secrets
 AT_ENCRYPTION_KEY = secrets.AT_ENCRYPTION_KEY
 AT_TRANSITION_KEY = secrets.AT_TRANSITION_KEY
 AT_SALT = secrets.AT_SALT
-DEFAULT_DURATION = 5 * 1000 # 5s
+DEFAULT_WINDOW_SECONDS = 5 * 1000 # 5s
 
 
 class TestAuthToken(unittest.TestCase):
 
     def setUp(self):
         # Test for Query String
-        self.at = AuthToken(key=AT_ENCRYPTION_KEY, duration=DEFAULT_DURATION)
+        self.at = AuthToken(key=AT_ENCRYPTION_KEY, window_seconds=DEFAULT_WINDOW_SECONDS)
         
         # Test for Cookie
-        self.cat = AuthToken(key=AT_ENCRYPTION_KEY, algorithm='sha1', duration=DEFAULT_DURATION)
+        self.cat = AuthToken(key=AT_ENCRYPTION_KEY, algorithm='sha1', window_seconds=DEFAULT_WINDOW_SECONDS)
 
         # Test for Header
-        self.hat = AuthToken(key=AT_ENCRYPTION_KEY, algorithm='md5', duration=DEFAULT_DURATION)
+        self.hat = AuthToken(key=AT_ENCRYPTION_KEY, algorithm='md5', window_seconds=DEFAULT_WINDOW_SECONDS)
 
     def _token_setting(self, ttype, escape_early, transition):
         t = None
@@ -69,7 +69,7 @@ class TestAuthToken(unittest.TestCase):
         self._token_setting('q', escape_early, transition)
         token = self.at.generateToken(url=path, payload=None, session_id=None)
         # print(path)
-        url = "http://{0}{1}{4}{2}={3}".format(AT_HOSTNAME, path, token.name, token.token,
+        url = "http://{0}{1}{4}{2}={3}".format(AT_HOSTNAME, path, self.at.token_name, token,
             '&' if '?' in path else '?')
         # print(url)
         response = requests.get(url)
@@ -81,7 +81,7 @@ class TestAuthToken(unittest.TestCase):
 
         token = self.cat.generateToken(url=path, payload=None, session_id=None)
         url = "http://{0}{1}".format(AT_HOSTNAME, path)
-        response = requests.get(url, cookies={token.name: token.token})
+        response = requests.get(url, cookies={self.cat.token_name: token})
         self.assertEqual(expacted, response.status_code)
 
     def _headerAssertEqual(self, path, expacted, escape_early=True, transition=False,
@@ -90,7 +90,7 @@ class TestAuthToken(unittest.TestCase):
 
         token = self.hat.generateToken(url=path, payload=None, session_id=None)
         url = "http://{0}{1}".format(AT_HOSTNAME, path)
-        response = requests.get(url, headers={token.name: token.token})
+        response = requests.get(url, headers={self.hat.token_name: token})
         self.assertEqual(expacted, response.status_code)
         
     def _test_case_set(self, query_path, cookie_path, header_path, escape_early):
@@ -157,9 +157,9 @@ class TestAuthToken(unittest.TestCase):
     
     def test_query_escape_on_ignore_yes_with_salt(self):
         query_salt_path = "/salt"
-        ats = self.at = AuthToken(key=AT_ENCRYPTION_KEY, salt=AT_SALT, duration=DEFAULT_DURATION)
+        ats = AuthToken(key=AT_ENCRYPTION_KEY, salt=AT_SALT, window_seconds=DEFAULT_WINDOW_SECONDS)
         token = ats.generateToken(url=query_salt_path)
-        url = "http://{0}{1}?{2}={3}".format(AT_HOSTNAME, query_salt_path, token.name, token.token)
+        url = "http://{0}{1}?{2}={3}".format(AT_HOSTNAME, query_salt_path, ats.token_name, token)
         response = requests.get(url)
         self.assertEqual(404, response.status_code)
         

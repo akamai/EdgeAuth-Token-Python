@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 
-from .authtoken import AuthToken
+from .authtoken import AuthToken, AuthTokenError
 
 
-__all__ = ['AuthToken', 'AkamaiTokenError']
+__all__ = ['AuthToken', 'AuthTokenError']

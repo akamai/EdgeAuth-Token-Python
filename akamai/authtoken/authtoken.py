@@ -19,12 +19,10 @@
 import binascii
 import hashlib
 import hmac
-import optparse
 import os
 import re
 import sys
 import time
-from collections import namedtuple
 if sys.version_info[0] >= 3:
     from urllib.parse import quote_plus
 else:
@@ -50,7 +48,7 @@ class AuthTokenError(Exception):
 class AuthToken:
     def __init__(self, token_type=None, token_name='__token__',
                  key=None, algorithm='sha256', salt=None,
-                 start_time=None, end_time=None, duration=None,
+                 start_time=None, end_time=None, window_seconds=None,
                  field_delimiter='~', acl_delimiter='!',
                  escape_early=True, escape_early_upper=False, verbose=False):
         
@@ -58,7 +56,7 @@ class AuthToken:
         self.token_name = token_name
         self.start_time = start_time
         self.end_time = end_time
-        self.duration = duration
+        self.window_seconds = window_seconds
         if key is None or len(key) <= 0:
             raise AuthTokenError('You must provide a secret in order to '
                 'generate a new token.')
@@ -116,7 +114,7 @@ class AuthToken:
         if end_time is None:
             if int(window_seconds or 0) > 0:
                 if start_time is None:
-                    # If we have a duration window without a start time,
+                    # If we have a window window without a start time,
                     # calculate the end time starting from the current time.
                     end_time = int(time.mktime(time.gmtime())) + \
                         window_seconds
@@ -124,7 +122,7 @@ class AuthToken:
                     end_time = start_time + window_seconds
             else:
                 raise AuthTokenError('You must provide an expiration time or '
-                    'a duration window.')
+                    'a duration window..')
         
         try:
             if end_time < start_time:
@@ -220,10 +218,9 @@ Generating token...''' % (
             getattr(hashlib, self.algorithm.lower())).hexdigest()
         new_token += 'hmac=%s' % token_hmac
 
-        Token = namedtuple('Token', 'name token')
-        return Token(name=self.token_name, token=new_token)
+        return new_token
 
-    def generateToken(self, url=None, acl=None, start_time=None, end_time=None, duration=None,
+    def generateToken(self, url=None, acl=None, start_time=None, end_time=None, window_seconds=None,
                       ip=None, payload=None, session_id=None):
         if not start_time:
             start_time = self.start_time
@@ -231,14 +228,14 @@ Generating token...''' % (
         if not end_time:
             end_time = self.end_time
         
-        if not duration:
-            duration = self.duration
+        if not window_seconds:
+            window_seconds = self.window_seconds
 
         return self._generateToken(url=url,
                                    acl=acl,
                                    start_time=start_time,
                                    end_time=end_time,
-                                   window_seconds=duration,
+                                   window_seconds=window_seconds,
                                    ip=ip,
                                    payload=payload,
                                    session_id=session_id)
