@@ -33,7 +33,7 @@ import secrets
 AT_ENCRYPTION_KEY = secrets.AT_ENCRYPTION_KEY
 AT_TRANSITION_KEY = secrets.AT_TRANSITION_KEY
 AT_SALT = secrets.AT_SALT
-DEFAULT_WINDOW_SECONDS = 5 * 1000 # 5s
+DEFAULT_WINDOW_SECONDS = 5 * 1000
 
 
 class TestAuthToken(unittest.TestCase):
@@ -64,18 +64,16 @@ class TestAuthToken(unittest.TestCase):
         
         t.escape_early = escape_early
 
-    def _queryAssertEqual(self, path, expacted, query='', escape_early=True, transition=False,
+    def _queryAssertEqual(self, path, expacted, query='', escape_early=False, transition=False,
                           payload=None, session_id=None):
         self._token_setting('q', escape_early, transition)
         token = self.at.generateToken(url=path, payload=None, session_id=None)
-        # print(path)
         url = "http://{0}{1}{4}{2}={3}".format(AT_HOSTNAME, path, self.at.token_name, token,
             '&' if '?' in path else '?')
-        # print(url)
         response = requests.get(url)
         self.assertEqual(expacted, response.status_code)
     
-    def _cookieAssertEqual(self, path, expacted, escape_early=True, transition=False,
+    def _cookieAssertEqual(self, path, expacted, escape_early=False, transition=False,
                            payload=None, session_id=None):
         self._token_setting('c', escape_early, transition)
 
@@ -84,7 +82,7 @@ class TestAuthToken(unittest.TestCase):
         response = requests.get(url, cookies={self.cat.token_name: token})
         self.assertEqual(expacted, response.status_code)
 
-    def _headerAssertEqual(self, path, expacted, escape_early=True, transition=False,
+    def _headerAssertEqual(self, path, expacted, escape_early=False, transition=False,
                            payload=None, session_id=None):
         self._token_setting('h', escape_early, transition)
 
@@ -104,11 +102,6 @@ class TestAuthToken(unittest.TestCase):
         self._queryAssertEqual(query_path + query_string, 403, escape_early=(False==escape_early))
         self._cookieAssertEqual(cookie_path + query_string, 403, escape_early=(False==escape_early))
         self._headerAssertEqual(header_path + query_string, 403, escape_early=(False==escape_early))
-        
-        # escape_query_string = quote_plus(query_string)
-        # self._queryAssertEqual(query_path + escape_query_string, 404, escape_early=escape_early)
-        # self._cookieAssertEqual(cookie_path + escape_query_string, 404, escape_early=escape_early)
-        # self._headerAssertEqual(header_path + escape_query_string, 404, escape_early=escape_early)
 
         # Transition Key Test
         self._queryAssertEqual(query_path, 404, transition=True, escape_early=escape_early)
@@ -125,44 +118,42 @@ class TestAuthToken(unittest.TestCase):
         self._cookieAssertEqual(cookie_path, 404, session_id='SOME_SESSION_ID_DATA', escape_early=escape_early)
         self._headerAssertEqual(header_path, 404, session_id='SOME_SESSION_ID_DATA', escape_early=escape_early)
     
-    def test_escape_on_ignoreQuery_yes(self):
+    def test_escape_on__ignoreQuery_yes(self):
         self._test_case_set("/q_escape_ignore", "/c_escape_ignore", "/h_escape_ignore", escape_early=True)
 
-    def test_escape_off_ignoreQuery_yes(self):
+    def test_escape_off__ignoreQuery_yes(self):
         self._test_case_set("/q_ignore", "/c_ignore", "/h_ignore", escape_early=False)
 
-    def test_escape_on_ignoreQuery_no(self):
+    def test_escape_on__ignoreQuery_no(self):
         query_path = "/q_escape"
         cookie_path = "/c_escape"
         header_path = "/h_escape"
-        query_string="?foo=bar&hello=world"
+        self._test_case_set(query_path, cookie_path, header_path, escape_early=True)
 
+        query_string="?foo=bar&hello=world"
         self._queryAssertEqual(query_path + query_string, 404, escape_early=True)
         self._cookieAssertEqual(cookie_path + query_string, 404, escape_early=True)
         self._headerAssertEqual(header_path + query_string, 404, escape_early=True)
 
-        self._test_case_set(query_path, cookie_path, header_path, escape_early=True)
-    
-    def test_escape_off_ignoreQuery_no(self):
+    def test_escape_off__ignoreQuery_no(self):
         query_path = "/q"
         cookie_path = "/c"
         header_path = "/h"
-        query_string="?foo=bar&hello=world"
+        self._test_case_set(query_path, cookie_path, header_path, escape_early=False)
         
+        query_string="?foo=bar&hello=world"
         self._queryAssertEqual(query_path + query_string, 404, escape_early=False)
         self._cookieAssertEqual(cookie_path + query_string, 404, escape_early=False)
         self._headerAssertEqual(header_path + query_string, 404, escape_early=False)
-
-        self._test_case_set(query_path, cookie_path, header_path, escape_early=False)
     
-    def test_query_escape_on_ignore_yes_with_salt(self):
+    def test_query_escape_on__ignore_yes_with_salt(self):
         query_salt_path = "/salt"
-        ats = AuthToken(key=AT_ENCRYPTION_KEY, salt=AT_SALT, window_seconds=DEFAULT_WINDOW_SECONDS)
+        ats = AuthToken(key=AT_ENCRYPTION_KEY, salt=AT_SALT, window_seconds=DEFAULT_WINDOW_SECONDS, escape_early=True)
         token = ats.generateToken(url=query_salt_path)
         url = "http://{0}{1}?{2}={3}".format(AT_HOSTNAME, query_salt_path, ats.token_name, token)
         response = requests.get(url)
         self.assertEqual(404, response.status_code)
-        
+
 
 if __name__ == '__main__':
     unittest.main()

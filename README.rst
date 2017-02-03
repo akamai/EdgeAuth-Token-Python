@@ -38,7 +38,7 @@ Example
     >>> AA_ENCRYPTION_KEY = 'YourEncryptionKey' # Don't expose AA_ENCRYPTION_KEY on public repository.
     >>> window_seconds = 500
     >>>
-    >>> at = AuthToken(key=AA_ENCRYPTION_KEY, window_seconds=window_seconds)
+    >>> at = AuthToken(key=AA_ENCRYPTION_KEY, window_seconds=window_seconds, escape_early=True)
     >>> path = '/akamai/authtoken'
     >>> token = at.generateToken(url=path)
     >>> url = "http://{0}{1}".format(AA_HOSTNAME, '/akamai/authtoken')
@@ -62,7 +62,7 @@ Usage
 
     AuthToken(token_type=None, token_name='__token__', key=None, algorithm='sha256', 
             salt=None, start_time=None, end_time=None, window_seconds=None,
-            field_delimiter='~', acl_delimiter='!', escape_early=True, 
+            field_delimiter='~', acl_delimiter='!', escape_early=False, 
             escape_early_upper=False, verbose=False)
 
 ::
@@ -77,22 +77,21 @@ Usage
     window_seconds - How long is this token valid for?
     field_delimiter - Character used to delimit token body fields.
     acl_delimiter - Character used to delimit acl fields.
-    escape_early - Causes strings to be url encoded before being used.
-    escape_early_upper - Causes strings to be url encoded before being used.
-    verbose - Print all arguments.
+    escape_early - Causes strings to be 'url' encoded before being used.
+    escape_early_upper - Causes strings to be 'url' encoded before being used.
+    verbose - Print all parameters.
 
 
 **AuthToken's Method**
 
 .. code-block:: python
 
-    generateToken(url=None, acl=None, start_time=None, end_time=None, 
+    generateToken(acl=None, url=None, start_time=None, end_time=None, 
                 window_seconds=None, ip=None, payload=None, session_id=None)
 
 ::
-
-    url - URL path
     acl - Access control list delimited by ! [ie. /*]
+    url - Single URL path
     start_time, end_time, window_seconds - Same as Authtoken's variables, but they overrides Authtoken's.
     ip - IP Address to restrict this token to. (Troublesome in many cases (roaming, NAT, etc) so not often used)
     payload - Additional text added to the calculated digest.

@@ -105,9 +105,7 @@ if __name__ == '__main__':
                                     payload=options.payload,
                                     session_id=options.session_id)
 
-    print("### Cookie ###")
-    print("{0}={1};".format(options.token_name, token))
+    print("### Cookie or Query String ###")
+    print("{0}={1}".format(options.token_name, token))
     print("### Header ###")
     print("{0}: {1}".format(options.token_name, token))
-    print("### Query String ###")
-    print("{0}?{1}".format(options.token_name, token))
