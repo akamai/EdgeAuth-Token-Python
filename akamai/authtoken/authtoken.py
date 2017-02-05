@@ -85,7 +85,7 @@ class AuthToken:
         # Return the original, unmodified text.
         return text
 
-    def _generateToken(self, acl=None, url=None, 
+    def _generateToken(self, url=None, acl=None,
                        window_seconds=None, start_time=None, end_time=None,
                        ip=None, payload=None, session_id=None):
         if str(start_time).lower() == 'now':
@@ -148,8 +148,8 @@ Start Time      : {8}
 End Time        : {9}
 Window(seconds) : {10}
 IP              : {11}
-ACL             : {12}
-URL             : {13}
+URL             : {12}
+ACL             : {13}
 Key/Secret      : {2}
 Payload         : {14}
 Algo            : {3}
@@ -170,8 +170,8 @@ Generating token...'''.format(self.token_type if self.token_type else '', #0
     end_time if end_time else '', #9
     window_seconds if window_seconds else '', #10
     ip if ip else '', #11
-    acl if acl else '', #12
-    url if url else '', #13
+    url if url else '', #12
+    acl if acl else '', #13
     payload if payload else '', #14
     session_id if session_id else '')) #15
 
@@ -214,7 +214,7 @@ Generating token...'''.format(self.token_type if self.token_type else '', #0
 
         return new_token
 
-    def generateToken(self, acl=None, url=None, start_time=None, end_time=None, window_seconds=None,
+    def generateToken(self, url=None, acl=None, start_time=None, end_time=None, window_seconds=None,
                       ip=None, payload=None, session_id=None):
         if not start_time:
             start_time = self.start_time
@@ -225,8 +225,8 @@ Generating token...'''.format(self.token_type if self.token_type else '', #0
         if not window_seconds:
             window_seconds = self.window_seconds
 
-        return self._generateToken(acl=acl,
-                                   url=url,
+        return self._generateToken(url=url,
+                                   acl=acl,
                                    start_time=start_time,
                                    end_time=end_time,
                                    window_seconds=window_seconds,

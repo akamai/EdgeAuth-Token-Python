@@ -65,33 +65,34 @@ Usage
             field_delimiter='~', acl_delimiter='!', escape_early=False, 
             escape_early_upper=False, verbose=False)
 
-::
-
-    token_type - Select a preset. (Not Supported Yet)  
-    token_name - Parameter name for the new token. [Default: __token__]
-    key - Secret required to generate the token. It must be hexadecimal digit string with even-length.
-    algorithm - Algorithm to use to generate the token. (sha1, sha256, or md5) [Default:sha256]
-    salt - Additional data validated by the token but NOT included in the token body. (It will be deprecated)
-    start_time - What is the start time? (Use string 'now' for the current time)
-    end_time - When does this token expire? 'end_time' overrides 'window_seconds'
-    window_seconds - How long is this token valid for?
-    field_delimiter - Character used to delimit token body fields.
-    acl_delimiter - Character used to delimit acl fields.
-    escape_early - Causes strings to be 'url' encoded before being used.
-    escape_early_upper - Causes strings to be 'url' encoded before being used.
-    verbose - Print all parameters.
+ Parameter             Description  
+====================  ===================================================================================================  
+ token_type            Select a preset. (Not Supported Yet)  
+ token_name            Parameter name for the new token. [Default: __token__]
+ key                   Secret required to generate the token. It must be hexadecimal digit string with even-length.
+ algorithm             Algorithm to use to generate the token. (sha1, sha256, or md5) [Default:sha256]
+ salt                  Additional data validated by the token but NOT included in the token body. (It will be deprecated)
+ start_time            What is the start time? (Use string 'now' for the current time)
+ end_time              When does this token expire? 'end_time' overrides 'window_seconds'
+ window_seconds        How long is this token valid for?
+ field_delimiter       Character used to delimit token body fields.
+ acl_delimiter         Character used to delimit acl fields.
+ escape_early          Causes strings to be 'url' encoded before being used.
+ escape_early_upper    Causes strings to be 'url' encoded before being used.
+ verbose               Print all parameters.
+ ====================  ===================================================================================================  
 
 
 **AuthToken's Method**
 
 .. code-block:: python
 
-    generateToken(acl=None, url=None, start_time=None, end_time=None, 
+    generateToken(url=None, acl=None, start_time=None, end_time=None, 
                 window_seconds=None, ip=None, payload=None, session_id=None)
 
 ::
-    acl - Access control list delimited by ! [ie. /*]
     url - Single URL path
+    acl - Access control list delimited by ! [ie. /*]
     start_time, end_time, window_seconds - Same as Authtoken's variables, but they overrides Authtoken's.
     ip - IP Address to restrict this token to. (Troublesome in many cases (roaming, NAT, etc) so not often used)
     payload - Additional text added to the calculated digest.
