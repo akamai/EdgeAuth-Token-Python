@@ -37,7 +37,7 @@ class AuthTokenError(Exception):
         self._text = text
 
     def __str__(self):
-        return 'AuthTokenError:%s' % self._text
+        return 'AuthTokenError:{0}'.format(self._text)
 
     def _getText(self):
         return str(self)
@@ -142,71 +142,66 @@ class AuthToken:
         if self.verbose:
             print('''
 Akamai Token Generation Parameters
-Token Type      : %s
-Token Name      : %s
-Start Time      : %s
-Window(seconds) : %s
-End Time        : %s
-IP              : %s
-URL             : %s
-ACL             : %s
-Key/Secret      : %s
-Payload         : %s
-Algo            : %s
-Salt            : %s
-Session ID      : %s
-Field Delimiter : %s
-ACL Delimiter   : %s
-Escape Early    : %s
-Generating token...''' % (
-    ''.join([str(x) for x in [self.token_type] if x is not None]),
-    ''.join([str(x) for x in [self.token_name] if x is not None]),
-    ''.join([str(x) for x in [start_time] if x is not None]),
-    ''.join([str(x) for x in [window_seconds] if x is not None]),
-    ''.join([str(x) for x in [end_time] if x is not None]),
-    ''.join([str(x) for x in [ip] if x is not None]),
-    ''.join([str(x) for x in [url] if x is not None]),
-    ''.join([str(x) for x in [acl] if x is not None]),
-    ''.join([str(x) for x in [self.key] if x is not None]),
-    ''.join([str(x) for x in [payload] if x is not None]),
-    ''.join([str(x) for x in [self.algorithm] if x is not None]),
-    ''.join([str(x) for x in [self.salt] if x is not None]),
-    ''.join([str(x) for x in [session_id] if x is not None]),
-    ''.join([str(x) for x in [self.field_delimiter] if x is not None]),
-    ''.join([str(x) for x in [self.acl_delimiter] if x is not None]),
-    ''.join([str(x) for x in [self.escape_early] if x is not None])))
+Token Type      : {0}
+Token Name      : {1}
+Start Time      : {8}
+End Time        : {9}
+Window(seconds) : {10}
+IP              : {11}
+ACL             : {12}
+URL             : {13}
+Key/Secret      : {2}
+Payload         : {14}
+Algo            : {3}
+Salt            : {4}
+Session ID      : {15}
+Field Delimiter : {5}
+ACL Delimiter   : {6}
+Escape Early    : {7}
+Generating token...'''.format(self.token_type if self.token_type else '', #0
+    self.token_name if self.token_name else '', #1
+    self.key if self.key else '', #2
+    self.algorithm if self.algorithm else '', #3
+    self.salt if self.salt else '', #4
+    self.field_delimiter if self.field_delimiter else '', #5
+    self.acl_delimiter if self.acl_delimiter else '', #6
+    self.escape_early if self.escape_early else '', #7
+    start_time if start_time else '', #8
+    end_time if end_time else '', #9
+    window_seconds if window_seconds else '', #10
+    ip if ip else '', #11
+    acl if acl else '', #12
+    url if url else '', #13
+    payload if payload else '', #14
+    session_id if session_id else '')) #15
 
         hash_source = ''
         new_token = ''
 
         if ip:
-            new_token += 'ip=%s%c' % (self.escapeEarly(ip),
+            new_token += 'ip={0}{1}'.format(self.escapeEarly(ip),
                 self.field_delimiter)
 
         if start_time is not None:
-            new_token += 'st=%d%c' % (start_time, self.field_delimiter)
+            new_token += 'st={0}{1}'.format(start_time, self.field_delimiter)
 
-        new_token += 'exp=%d%c' % (end_time, self.field_delimiter)
+        new_token += 'exp={0}{1}'.format(end_time, self.field_delimiter)
 
         if acl:
-            new_token += 'acl=%s%c' % (acl,
-                self.field_delimiter)
+            new_token += 'acl={0}{1}'.format(acl, self.field_delimiter)
 
         if session_id:
-            new_token += 'id=%s%c' % (self.escapeEarly(session_id),
-                self.field_delimiter)
+            new_token += 'id={0}{1}'.format(self.escapeEarly(session_id), self.field_delimiter)
 
         if payload:
-            new_token += 'data=%s%c' % (self.escapeEarly(payload),
-                self.field_delimiter)
+            new_token += 'data={0}{1}'.format(self.escapeEarly(payload), self.field_delimiter)
 
         hash_source += new_token
         if url and not acl:
-            hash_source += 'url=%s%c' % (self.escapeEarly(url),
-                self.field_delimiter)
+            hash_source += 'url={0}{1}'.format(self.escapeEarly(url), self.field_delimiter)
 
         if self.salt:
-            hash_source += 'salt=%s%c' % (self.salt, self.field_delimiter)
+            hash_source += 'salt={0}{1}'.format(self.salt, self.field_delimiter)
 
         if self.algorithm.lower() not in ('sha256', 'sha1', 'md5'):
             raise AuthTokenError('Unknown algorithm')
@@ -215,7 +210,7 @@ Generating token...''' % (
             binascii.a2b_hex(self.key),
             hash_source.rstrip(self.field_delimiter).encode(),
             getattr(hashlib, self.algorithm.lower())).hexdigest()
-        new_token += 'hmac=%s' % token_hmac
+        new_token += 'hmac={0}'.format(token_hmac)
 
         return new_token
 
