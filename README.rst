@@ -65,6 +65,7 @@ Usage
             field_delimiter='~', acl_delimiter='!', escape_early=False, 
             escape_early_upper=False, verbose=False)
 
+--------------------  ---------------------------------------------------------------------------------------------------
  Parameter             Description  
 ====================  ===================================================================================================  
  token_type            Select a preset. (Not Supported Yet)  
