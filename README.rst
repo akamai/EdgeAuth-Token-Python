@@ -45,7 +45,7 @@ Example
         AA_ENCRYPTION_KEY must be hexadecimal digit string with even-length.
         Don't expose AA_ENCRYPTION_KEY on the public repository.
 
-.. topic:: URL Option
+.. topic:: URL parameter option
 
     .. code-block:: python
 
@@ -66,27 +66,27 @@ Example
 
     ::
 
-        It depends on turning on/off 'Escape token input' in the property manager (on: escape_early=True / off: escape_early=False)
+        It depends on turning on/off 'Escape token input' in the property manager. (on: escape_early=True / off: escape_early=False)
         In [Example 2], it's only okay for 'Ignore query string' option on in the property manager.
         If you want to 'Ignore query string' off using query string as your token, Please contact your Akamai representative.
 
 
-.. topic:: ACL(Access Control List) Option
+.. topic:: ACL(Access Control List) parameter option
 
     .. code-block:: python
 
-        # 1) Using * with Header
+        # 1) Header using *
         at = AuthToken(key=AA_ENCRYPTION_KEY, window_seconds=DURATION)
         token = at.generateToken(acl="/akamai/authtoken/list/*")
         url = "http://{0}{1}".format(AA_HOSTNAME, "/akamai/authtoken/list/something")
         response = requests.get(url, headers={at.token_name: token})
         print(response)
 
-        # 2) Delimited by '!'
+        # 2) Cookie Delimited by '!'
         at = AuthToken(key=AA_ENCRYPTION_KEY, window_seconds=DURATION)
         token = at.generateToken(acl="/akamai/authtoken/list!/akamai/authtoken/list/*")
         url = "http://{0}{1}".format(AA_HOSTNAME, "/akamai/authtoken/list/something2")
-        response = requests.get(url, headers={at.token_name: token})
+        response = requests.get(url, cookies={at.token_name: token})
         print(response)
 
     ::
