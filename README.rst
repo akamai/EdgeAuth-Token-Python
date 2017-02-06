@@ -98,7 +98,8 @@ Usage
             field_delimiter='~', acl_delimiter='!', escape_early=False, 
             escape_early_upper=False, verbose=False)
 
-::
+#
+
     ====================  ===================================================================================================
      Parameter             Description
     ====================  ===================================================================================================
@@ -123,9 +124,9 @@ Usage
 
     generateToken(url=None, acl=None, start_time=None, end_time=None, 
                 window_seconds=None, ip=None, payload=None, session_id=None)
- 
 
-::
+# Returns the authorization token string.
+
     +----------------+---------------------------------------------------------------------------------------------------------+
     | Parameter      | Description                                                                                             |
     +================+=========================================================================================================+
