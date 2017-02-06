@@ -29,63 +29,70 @@ To install Akamai Authorization Token for Python:
 Example
 -------
 
-.. code-block:: python
+.. topic:: Define
 
-    from akamai.authtoken import AuthToken, AuthTokenError
-    import requests # just for this example
+    .. code-block:: python
 
-    AA_HOSTNAME = 'token-auth.akamaized.net'
-    #######################################################################
-    # AA_ENCRYPTION_KEY must be hexadecimal digit string with even-length.
-    # Don't expose AA_ENCRYPTION_KEY on the public repository.
-    #######################################################################
-    AA_ENCRYPTION_KEY = 'YourEncryptionKey' 
-    DURATION = 500 # 500 seconds
+        from akamai.authtoken import AuthToken, AuthTokenError
+        import requests # just for this example
 
-    ## [Example 1] URL with Cookie option
-    at = AuthToken(key=AA_ENCRYPTION_KEY, window_seconds=DURATION, escape_early=True)
-    token = at.generateToken(url="/akamai/authtoken")
-    url = "http://{0}{1}".format(AA_HOSTNAME, "/akamai/authtoken")
-    response = requests.get(url, cookies={at.token_name: token})
-    print(response)
-    # <Response [200, 404 or 5xx]> # if fail, it will be 403
+        AA_HOSTNAME = 'auth-token.akamaized.net'
+        AA_ENCRYPTION_KEY = 'YourEncryptionKey' 
+        DURATION = 500 # seconds
 
-    ## [Example 2] URL with Query string option
-    at = AuthToken(key=AA_ENCRYPTION_KEY, window_seconds=DURATION, escape_early=True)
-    token = at.generateToken(acl="/akamai/authtoken")
-    url = "http://{0}{1}?{2}={3}".format(AA_HOSTNAME, "/akamai/authtoken", at.token_name, token)
-    response = requests.get(url)
-    print(response)
+    ::
 
-    ## [Example 3] ACL(Access Control List) Using * with Header option
-    at = AuthToken(key=AA_ENCRYPTION_KEY, window_seconds=DURATION)
-    token = at.generateToken(acl="/akamai/authtoken/list/*")
-    url = "http://{0}{1}".format(AA_HOSTNAME, "/akamai/authtoken/list/something")
-    response = requests.get(url, headers={at.token_name: token})
-    print(response)
+        AA_ENCRYPTION_KEY must be hexadecimal digit string with even-length.
+        Don't expose AA_ENCRYPTION_KEY on the public repository.
 
-    ## [Example 4] ACL delimited by '!'
-    at = AuthToken(key=AA_ENCRYPTION_KEY, window_seconds=DURATION)
-    token = at.generateToken(acl="/akamai/authtoken/list!/akamai/authtoken/list/*")
-    url = "http://{0}{1}".format(AA_HOSTNAME, "/akamai/authtoken/list/something2")
-    response = requests.get(url, headers={at.token_name: token})
-    print(response)
+.. topic:: URL Option
 
-    ###############
-    # For the 'ACL'
-    ###############
-    # It doesn't matter turning on/off 'Escape token input' in the property manager
-    # But you should keep escape_early=False (Default)
+    .. code-block:: python
 
-    ###############
-    # For the 'URL'
-    ###############
-    # It depends on turning on/off 'Escape token input' in the property manager.
-    # on: escape_early=True / off: escape_early=False
-    # In Example 2, it's only okay for 'Ignore query string' option on.
-    # If you want to 'Ignore query string' off using query string as your token,
-    # Please contact your Akamai representative.
+        # 1) Cookie
+        at = AuthToken(key=AA_ENCRYPTION_KEY, window_seconds=DURATION, escape_early=True)
+        token = at.generateToken(url="/akamai/authtoken")
+        url = "http://{0}{1}".format(AA_HOSTNAME, "/akamai/authtoken")
+        response = requests.get(url, cookies={at.token_name: token})
+        print(response)
+        # <Response [200, 404 or 5xx]> # if fail, it will be 403
 
+        # 2) Query string
+        at = AuthToken(key=AA_ENCRYPTION_KEY, window_seconds=DURATION, escape_early=True)
+        token = at.generateToken(acl="/akamai/authtoken")
+        url = "http://{0}{1}?{2}={3}".format(AA_HOSTNAME, "/akamai/authtoken", at.token_name, token)
+        response = requests.get(url)
+        print(response)
+
+    ::
+
+        It depends on turning on/off 'Escape token input' in the property manager (on: escape_early=True / off: escape_early=False)
+        In [Example 2], it's only okay for 'Ignore query string' option on in the property manager.
+        If you want to 'Ignore query string' off using query string as your token, Please contact your Akamai representative.
+
+
+.. topic:: ACL(Access Control List) Option
+
+    .. code-block:: python
+
+        # 1) Using * with Header
+        at = AuthToken(key=AA_ENCRYPTION_KEY, window_seconds=DURATION)
+        token = at.generateToken(acl="/akamai/authtoken/list/*")
+        url = "http://{0}{1}".format(AA_HOSTNAME, "/akamai/authtoken/list/something")
+        response = requests.get(url, headers={at.token_name: token})
+        print(response)
+
+        # 2) Delimited by '!'
+        at = AuthToken(key=AA_ENCRYPTION_KEY, window_seconds=DURATION)
+        token = at.generateToken(acl="/akamai/authtoken/list!/akamai/authtoken/list/*")
+        url = "http://{0}{1}".format(AA_HOSTNAME, "/akamai/authtoken/list/something2")
+        response = requests.get(url, headers={at.token_name: token})
+        print(response)
+
+    ::
+
+        It doesn't matter turning on/off 'Escape token input' in the property manager, but you should keep escape_early=False (Default)
+    
 
 Usage
 -----
