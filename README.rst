@@ -97,11 +97,11 @@ Usage
             salt=None, start_time=None, end_time=None, window_seconds=None,
             field_delimiter='~', acl_delimiter='!', escape_early=False, 
             escape_early_upper=False, verbose=False)
-  
-  
+
+::
     --------------------  ---------------------------------------------------------------------------------------------------
-     Parameter             Description  
-    ====================  ===================================================================================================  
+     Parameter             Description
+    ====================  ===================================================================================================
      token_type            Select a preset. (Not Supported Yet)  
      token_name            Parameter name for the new token. [Default: __token__]
      key                   Secret required to generate the token. It must be hexadecimal digit string with even-length.
@@ -115,7 +115,7 @@ Usage
      escape_early          Causes strings to be 'url' encoded before being used.
      escape_early_upper    Causes strings to be 'url' encoded before being used.
      verbose               Print all parameters.
-    ====================  ===================================================================================================  
+    ====================  ===================================================================================================
 
 **AuthToken's Method**
 
@@ -123,13 +123,14 @@ Usage
 
     generateToken(url=None, acl=None, start_time=None, end_time=None, 
                 window_seconds=None, ip=None, payload=None, session_id=None)
-  
-  
+ 
+
+Returns authorization token string
     +----------------+---------------------------------------------------------------------------------------------------------+
     | Parameter      | Description                                                                                             |
     +================+=========================================================================================================+
     | url            | Single URL path.                                                                                        |
-    +----------------+---------------------------------------------------------------------------------------------------------+ 
+    +----------------+---------------------------------------------------------------------------------------------------------+
     | acl            | Access control list delimited by ! [ie. /*]                                                             |
     +----------------+---------------------------------------------------------------------------------------------------------+
     | start_time     | Same as Authtoken's variables, but they overrides Authtoken's.                                          |
