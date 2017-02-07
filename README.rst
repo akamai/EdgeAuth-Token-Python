@@ -14,6 +14,7 @@ Akamai-AuthToken: Akamai Authorization for Python
 Akamai-AuthToken is Akamai Authorization Token in the HTTP Cookie, Query String and Header for a client. 
 You can configure it in the Property Manager at https://control.akamai.com.
 It's a behavior which is Auth Token 2.0 Verification.
+Akamai-AuthToken supports Python 2.6–2.7 & 3.3–3.6, and runs great on PyPy.
 
 .. image:: https://github.com/AstinCHOI/akamai-asset/blob/master/authtoken/authtoken.png?raw=true
     :align: center
