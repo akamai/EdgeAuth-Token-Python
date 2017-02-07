@@ -4,6 +4,9 @@ Akamai-AuthToken: Akamai Authorization for Python
 .. image:: https://img.shields.io/pypi/v/akamai-authtoken.svg
     :target: https://pypi.python.org/pypi/akamai-authtoken
 
+.. image:: https://travis-ci.org/AstinCHOI/Akamai-AuthToken-Python.svg?branch=master
+    :target: https://travis-ci.org/AstinCHOI/Akamai-AuthToken-Python
+
 .. image:: http://img.shields.io/:license-apache-blue.svg 
     :target: https://github.com/AstinCHOI/Akamai-AuthToken-Python/blob/master/LICENSE
 

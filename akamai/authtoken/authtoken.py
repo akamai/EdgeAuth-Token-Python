@@ -207,7 +207,7 @@ Generating token...'''.format(self.token_type if self.token_type else '', #0
             raise AuthTokenError('Unknown algorithm')
 
         token_hmac = hmac.new(
-            binascii.a2b_hex(self.key),
+            binascii.a2b_hex(self.key.encode()),
             hash_source.rstrip(self.field_delimiter).encode(),
             getattr(hashlib, self.algorithm.lower())).hexdigest()
         new_token += 'hmac={0}'.format(token_hmac)
