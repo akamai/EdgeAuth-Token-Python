@@ -17,4 +17,4 @@ script:
   - export AT_ENCRYPTION_KEY=$AT_ENCRYPTION_KEY
   - export AT_TRANSITION_KEY=$AT_TRANSITION_KEY
   - export AT_SALT=$AT_SALT
-  - python test/test_netstorage.py
+  - python test/test_authtoken.py
