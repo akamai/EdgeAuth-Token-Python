@@ -16,27 +16,36 @@
 # limitations under the License.
 
 
-import unittest
-import sys; 
+import os
+import sys
 sys.path.append("akamai/authtoken")
 sys.path.append("../akamai/authtoken")
 if sys.version_info[0] >= 3:
     from urllib.parse import quote_plus
 else:
     from urllib import quote_plus
+import unittest
 
 from authtoken import AuthToken
 
 import requests
 
 
-AT_HOSTNAME = "token-auth.akamaized.net"
-import secrets
-AT_ENCRYPTION_KEY = secrets.AT_ENCRYPTION_KEY
-AT_TRANSITION_KEY = secrets.AT_TRANSITION_KEY
-AT_SALT = secrets.AT_SALT
-DEFAULT_WINDOW_SECONDS = 500
 
+if 'TEST_MODE' in os.environ and os.environ['TEST_MODE'] == 'LOCAL':
+    # export TEST_MODE=LOCAL
+    import secrets
+    AT_HOSTNAME = secrets.AT_HOSTNAME
+    AT_ENCRYPTION_KEY = secrets.AT_ENCRYPTION_KEY
+    AT_TRANSITION_KEY = secrets.AT_TRANSITION_KEY    
+    AT_SALT = secrets.AT_SALT
+else:
+    AT_HOSTNAME = os.environ['AT_HOSTNAME']
+    AT_ENCRYPTION_KEY = os.environ['AT_ENCRYPTION_KEY']
+    AT_TRANSITION_KEY = os.environ['AT_TRANSITION_KEY']
+    AT_SALT = os.environ['AT_SALT']
+
+DEFAULT_WINDOW_SECONDS = 500
 
 class TestAuthToken(unittest.TestCase):
 
