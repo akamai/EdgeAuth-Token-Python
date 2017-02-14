@@ -35,8 +35,6 @@ To install Akamai Authorization Token for Python:
 Example
 -------
 
-.. topic:: Define
-
     .. code-block:: python
 
         from akamai.authtoken import AuthToken, AuthTokenError
@@ -51,7 +49,7 @@ Example
         AA_ENCRYPTION_KEY must be hexadecimal digit string with even-length.
         Don't expose AA_ENCRYPTION_KEY on the public repository.
 
-.. topic:: URL parameter option
+**URL parameter option**
 
     .. code-block:: python
 
@@ -77,7 +75,7 @@ Example
         If you want to 'Ignore query string' off using query string as your token, Please contact your Akamai representative.
 
 
-.. topic:: ACL(Access Control List) parameter option
+**ACL(Access Control List) parameter option**
 
     .. code-block:: python
 
