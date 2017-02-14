@@ -11,10 +11,12 @@ Akamai-AuthToken: Akamai Authorization for Python
     :target: https://github.com/AstinCHOI/Akamai-AuthToken-Python/blob/master/LICENSE
 
 
-Akamai-AuthToken is Akamai Authorization Token in the HTTP Cookie, Query String and Header for a client. 
+Akamai-AuthToken is Akamai Authorization Token in the HTTP Cookie, Query String and Header for a client.
 You can configure it in the Property Manager at https://control.akamai.com.
-It's a behavior which is Auth Token 2.0 Verification.
-Akamai-AuthToken supports Python 2.6–2.7 & 3.3–3.6, and runs great on PyPy.
+It's a behavior which is Auth Token 2.0 Verification.  
+
+Akamai-AuthToken supports Python 2.6–2.7 & 3.3–3.6, and runs great on PyPy. (This is Akamai unofficial code)
+
 
 .. image:: https://github.com/AstinCHOI/akamai-asset/blob/master/authtoken/authtoken.png?raw=true
     :align: center
@@ -167,12 +169,6 @@ Command
     $ python cms_authtoken.py -k YourEncryptionKey -w 5000 -u /hello/world -x
 
 Use -h or --help option for the detail.
-
-
-Author
-------
-
-Astin Choi (achoi@akamai.com)  
 
 
 License
