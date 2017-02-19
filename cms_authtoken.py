@@ -53,10 +53,6 @@ if __name__ == '__main__':
         action='store_true', default=False, dest='escape_early',
         help='Causes strings to be url encoded before being used.')
     parser.add_option(
-        '-X', '--escape_early_upper',
-        action='store_true', default=False, dest='escape_early_upper',
-        help='Causes strings to be url encoded before being used.')
-    parser.add_option(
         '-v', '--verbose',
         action='store_true', default=False, dest='verbose',
         help='Print all arguments.')
@@ -94,7 +90,6 @@ if __name__ == '__main__':
         field_delimiter=options.field_delimiter,
         acl_delimiter=options.acl_delimiter,
         escape_early=options.escape_early,
-        escape_early_upper=options.escape_early_upper,
         verbose=options.verbose)
     token = generator.generateToken(url=options.url,
                                     acl=options.access_list,

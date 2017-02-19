@@ -106,8 +106,7 @@ Usage
 
     AuthToken(token_type=None, token_name='__token__', key=None, algorithm='sha256', 
             salt=None, start_time=None, end_time=None, window_seconds=None,
-            field_delimiter='~', acl_delimiter='!', escape_early=False, 
-            escape_early_upper=False, verbose=False)
+            field_delimiter='~', acl_delimiter='!', escape_early=False, verbose=False)
 
 #
 
@@ -125,7 +124,6 @@ Usage
      field_delimiter       Character used to delimit token body fields. [Default: ~]
      acl_delimiter         Character used to delimit acl fields. [Default: !]
      escape_early          Causes strings to be 'url' encoded before being used.
-     escape_early_upper    Causes strings to be 'url' encoded before being used.
      verbose               Print all parameters.
     ====================  ===================================================================================================
 

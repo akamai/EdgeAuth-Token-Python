@@ -31,7 +31,6 @@ from authtoken import AuthToken
 import requests
 
 
-
 if 'TEST_MODE' in os.environ and os.environ['TEST_MODE'] == 'LOCAL':
     # export TEST_MODE=LOCAL
     import secrets
@@ -47,11 +46,12 @@ else:
 
 DEFAULT_WINDOW_SECONDS = 500
 
+
 class TestAuthToken(unittest.TestCase):
 
     def setUp(self):
         # Test for Query String
-        self.at = AuthToken(key=AT_ENCRYPTION_KEY, window_seconds=DEFAULT_WINDOW_SECONDS)
+        self.at = AuthToken(**{'key': AT_ENCRYPTION_KEY, 'window_seconds': DEFAULT_WINDOW_SECONDS})
         
         # Test for Cookie
         self.cat = AuthToken(key=AT_ENCRYPTION_KEY, algorithm='sha1', window_seconds=DEFAULT_WINDOW_SECONDS)
