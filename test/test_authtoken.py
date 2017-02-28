@@ -75,7 +75,7 @@ class TestAuthToken(unittest.TestCase):
         
         t.escape_early = escape_early
 
-    def _queryAssertEqual(self, path, expacted, query='', escape_early=False, transition=False,
+    def _queryAssertEqual(self, path, expacted, escape_early=False, transition=False,
                           payload=None, session_id=None, isUrl=True):
         self._token_setting('q', escape_early, transition)
         if isUrl:
