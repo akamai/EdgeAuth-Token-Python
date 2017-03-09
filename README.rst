@@ -1,4 +1,4 @@
-Akamai-AuthToken: Akamai Authorization for Python
+Akamai-AuthToken: Akamai Authorization Token for Python
 =================================================
 
 .. image:: https://img.shields.io/pypi/v/akamai-authtoken.svg
@@ -40,31 +40,29 @@ Example
         from akamai.authtoken import AuthToken, AuthTokenError
         import requests # just for this example
 
-        AA_HOSTNAME = 'auth-token.akamaized.net'
-        AA_ENCRYPTION_KEY = 'YourEncryptionKey' 
+        AT_HOSTNAME = 'auth-token.akamaized.net'
+        AT_ENCRYPTION_KEY = 'YourEncryptionKey' 
         DURATION = 500 # seconds
 
     ::
 
-        AA_ENCRYPTION_KEY must be hexadecimal digit string with even-length.
-        Don't expose AA_ENCRYPTION_KEY on the public repository.
+        AT_ENCRYPTION_KEY must be hexadecimal digit string with even-length.
+        Don't expose AT_ENCRYPTION_KEY on the public repository.
 
 **URL parameter option**
 
     .. code-block:: python
 
         # 1) Cookie
-        at = AuthToken(key=AA_ENCRYPTION_KEY, window_seconds=DURATION, escape_early=True)
+        at = AuthToken(key=AT_ENCRYPTION_KEY, window_seconds=DURATION, escape_early=True)
         token = at.generateToken(url="/akamai/authtoken")
-        url = "http://{0}{1}".format(AA_HOSTNAME, "/akamai/authtoken")
+        url = "http://{0}{1}".format(AT_HOSTNAME, "/akamai/authtoken")
         response = requests.get(url, cookies={at.token_name: token})
-        print(response)
-        # <Response [200, 404 or 5xx]> # if fail, it will be 403
+        print(response) # Maybe not 403
 
         # 2) Query string
-        at = AuthToken(key=AA_ENCRYPTION_KEY, window_seconds=DURATION, escape_early=True)
         token = at.generateToken(acl="/akamai/authtoken")
-        url = "http://{0}{1}?{2}={3}".format(AA_HOSTNAME, "/akamai/authtoken", at.token_name, token)
+        url = "http://{0}{1}?{2}={3}".format(AT_HOSTNAME, "/akamai/authtoken", at.token_name, token)
         response = requests.get(url)
         print(response)
 
@@ -80,16 +78,16 @@ Example
     .. code-block:: python
 
         # 1) Header using *
-        at = AuthToken(key=AA_ENCRYPTION_KEY, window_seconds=DURATION)
+        at = AuthToken(key=AT_ENCRYPTION_KEY, window_seconds=DURATION)
         token = at.generateToken(acl="/akamai/authtoken/list/*")
-        url = "http://{0}{1}".format(AA_HOSTNAME, "/akamai/authtoken/list/something")
+        url = "http://{0}{1}".format(AT_HOSTNAME, "/akamai/authtoken/list/something")
         response = requests.get(url, headers={at.token_name: token})
         print(response)
 
         # 2) Cookie Delimited by '!'
-        at = AuthToken(key=AA_ENCRYPTION_KEY, window_seconds=DURATION)
-        token = at.generateToken(acl="/akamai/authtoken/list!/akamai/authtoken/list/*")
-        url = "http://{0}{1}".format(AA_HOSTNAME, "/akamai/authtoken/list/something2")
+        token = at.generateToken(acl="/akamai/authtoken!/akamai/authtoken/list/*")
+        url = "http://{0}{1}".format(AT_HOSTNAME, "/akamai/authtoken/list/something2")
+            # or "/akamai/authtoken"
         response = requests.get(url, cookies={at.token_name: token})
         print(response)
 
@@ -145,7 +143,7 @@ Usage
     +----------------+---------------------------------------------------------------------------------------------------------+
     | start_time     |                                                                                                         |
     +----------------+                                                                                                         +
-    | end_time       | Same as Authtoken's variables, but they overrides Authtoken's.                                          |
+    | end_time       | Same as Authtoken's parameters, but they overrides Authtoken's.                                          |
     +----------------+                                                                                                         +
     | window_seconds |                                                                                                         |
     +----------------+---------------------------------------------------------------------------------------------------------+
