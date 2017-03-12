@@ -61,7 +61,7 @@ Example
         print(response) # Maybe not 403
 
         # 2) Query string
-        token = at.generateToken(acl="/akamai/authtoken")
+        token = at.generateToken(url="/akamai/authtoken")
         url = "http://{0}{1}?{2}={3}".format(AT_HOSTNAME, "/akamai/authtoken", at.token_name, token)
         response = requests.get(url)
         print(response)
@@ -143,7 +143,7 @@ Usage
     +----------------+---------------------------------------------------------------------------------------------------------+
     | start_time     |                                                                                                         |
     +----------------+                                                                                                         +
-    | end_time       | Same as Authtoken's parameters, but they overrides Authtoken's.                                          |
+    | end_time       | Same as Authtoken's parameters, but they overrides Authtoken's.                                         |
     +----------------+                                                                                                         +
     | window_seconds |                                                                                                         |
     +----------------+---------------------------------------------------------------------------------------------------------+
