@@ -8,7 +8,7 @@ with open('README.rst', 'r') as f:
 
 setup (
     name = 'akamai-authtoken',
-    version = '0.4.1',
+    version = '0.4.2',
     description = 'Akamai Authorization Token for Configuration',
     long_description = readme,
     namespace_packages=['akamai'],
