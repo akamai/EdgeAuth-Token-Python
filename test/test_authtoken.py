@@ -204,7 +204,8 @@ class TestAuthToken(unittest.TestCase):
     
     def test_acl_deli_escape_on__ignoreQuery_yes(self):
         ats = AuthToken(key=AT_ENCRYPTION_KEY, window_seconds=DEFAULT_WINDOW_SECONDS, escape_early=False)
-        token = ats.generateToken(acl='/q_escape_ignore!/q_escape_ignore/*')
+        acl = ['/q_escape_ignore', '/q_escape_ignore/*']
+        token = ats.generateToken(acl=AuthToken.ACL_DELIMITER.join(acl))
         url = "http://{0}{1}?{2}={3}".format(AT_HOSTNAME, '/q_escape_ignore', ats.token_name, token)
         response = requests.get(url)
         self.assertEqual(404, response.status_code)

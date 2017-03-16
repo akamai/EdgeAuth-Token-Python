@@ -46,11 +46,12 @@ class AuthTokenError(Exception):
 
 
 class AuthToken:
+    ACL_DELIMITER='!'
+    
     def __init__(self, token_type=None, token_name='__token__',
                  key=None, algorithm='sha256', salt=None,
                  start_time=None, end_time=None, window_seconds=None,
-                 field_delimiter='~', acl_delimiter='!',
-                 escape_early=False, verbose=False):
+                 field_delimiter='~', escape_early=False, verbose=False):
         
         self.token_type = token_type
         self.token_name = token_name
@@ -64,7 +65,6 @@ class AuthToken:
         self.algorithm = algorithm
         self.salt = salt
         self.field_delimiter = field_delimiter
-        self.acl_delimiter = acl_delimiter
         self.escape_early = escape_early
         self.verbose = verbose
 
@@ -119,7 +119,7 @@ class AuthToken:
                 raise AuthTokenError('You must provide an expiration time or '
                     'a duration window..')
         
-        if start_time and (end_time < start_time):
+        if start_time and (end_time <= start_time):
             raise AuthTokenError('Token will have already expired.')
         
         if (not acl and not url) or (acl and url):
@@ -150,7 +150,7 @@ Generating token...'''.format(self.token_type if self.token_type else '', #0
                             self.algorithm if self.algorithm else '', #3
                             self.salt if self.salt else '', #4
                             self.field_delimiter if self.field_delimiter else '', #5
-                            self.acl_delimiter if self.acl_delimiter else '', #6
+                            ACL_DELIMITER if ACL_DELIMITER else '', #6
                             self.escape_early if self.escape_early else '', #7
                             start_time if start_time else '', #8
                             end_time if end_time else '', #9

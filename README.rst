@@ -85,7 +85,8 @@ Example
         print(response)
 
         # 2) Cookie Delimited by '!'
-        token = at.generateToken(acl="/akamai/authtoken!/akamai/authtoken/list/*")
+        acl = ["/akamai/authtoken", "/akamai/authtoken/list/*"]
+        token = at.generateToken(acl=AuthToken.ACL_DELIMITER.join(acl))
         url = "http://{0}{1}".format(AT_HOSTNAME, "/akamai/authtoken/list/something2")
             # or "/akamai/authtoken"
         response = requests.get(url, cookies={at.token_name: token})
@@ -104,7 +105,7 @@ Usage
 
     AuthToken(token_type=None, token_name='__token__', key=None, algorithm='sha256', 
             salt=None, start_time=None, end_time=None, window_seconds=None,
-            field_delimiter='~', acl_delimiter='!', escape_early=False, verbose=False)
+            field_delimiter='~', escape_early=False, verbose=False)
 
 #
 
@@ -120,10 +121,16 @@ Usage
      end_time              When does this token expire? 'end_time' overrides 'window_seconds'
      window_seconds        How long is this token valid for?
      field_delimiter       Character used to delimit token body fields. [Default: ~]
-     acl_delimiter         Character used to delimit acl fields. [Default: !]
      escape_early          Causes strings to be 'url' encoded before being used.
      verbose               Print all parameters.
     ====================  ===================================================================================================
+
+**AuthToken's Static Variable**
+
+.. code-block:: python
+
+    ACL_DELIMITER = '!' # Character used to delimit acl fields.
+
 
 **AuthToken's Method**
 
