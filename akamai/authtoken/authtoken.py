@@ -88,23 +88,26 @@ class AuthToken:
 
         if str(start_time).lower() == 'now':
             start_time = int(time.mktime(time.gmtime()))
-        elif start_time is not None:
+        elif start_time:
             try:
-                int(start_time) <= 0
+                if int(start_time) <= 0:
+                    raise AuthTokenError('start_time must be ( > 0 )')    
             except:
-                raise AuthTokenError('start_time must be ( > 0 ) or now')
+                raise AuthTokenError('start_time must be numeric or now')
 
-        if end_time is not None:
+        if end_time:
             try:
-                int(end_time) <= 0
+                if int(end_time) <= 0:
+                    raise AuthTokenError('end_time must be ( > 0 )')
             except:
-                raise AuthTokenError('end_time must be ( > 0 )')
+                raise AuthTokenError('end_time must be numeric')
 
-        if window_seconds is not None:
+        if window_seconds:
             try:
-                int(window_seconds) <= 0
+                if int(window_seconds) <= 0:
+                    raise AuthTokenError('window_seconds must be ( > 0 )')    
             except:
-                raise AuthTokenError('window_seconds must be ( > 0 )')
+                raise AuthTokenError('window_seconds must be numeric')
                 
         if end_time is None:
             if int(window_seconds or 0) > 0:
