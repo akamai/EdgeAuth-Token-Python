@@ -26,7 +26,7 @@ else:
     from urllib import quote_plus
 import unittest
 
-from authtoken import AuthToken
+from authtoken import AuthToken, AuthTokenError
 
 import requests
 
@@ -214,6 +214,29 @@ class TestAuthToken(unittest.TestCase):
         response = requests.get(url)
         self.assertEqual(404, response.status_code)
     ##########
+
+    def test_times(self):
+        att = AuthToken(key=AT_ENCRYPTION_KEY, window_seconds=DEFAULT_WINDOW_SECONDS, escape_early=False)
+        # start_time
+        with self.assertRaises(AuthTokenError):
+            att.generateToken(start_time=-1)
+        
+        with self.assertRaises(AuthTokenError):
+            att.generateToken(start_time="hello")
+        
+        # end_time
+        with self.assertRaises(AuthTokenError):
+            att.generateToken(end_time=-1)
+
+        with self.assertRaises(AuthTokenError):
+            att.generateToken(end_time="hello")
+        
+        # window_seconds
+        with self.assertRaises(AuthTokenError):
+            att.generateToken(window_seconds=-1)
+
+        with self.assertRaises(AuthTokenError):
+            att.generateToken(window_seconds="hello")
     
 
 if __name__ == '__main__':
