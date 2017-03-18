@@ -216,27 +216,28 @@ class TestAuthToken(unittest.TestCase):
     ##########
 
     def test_times(self):
-        att = AuthToken(key=AT_ENCRYPTION_KEY, window_seconds=DEFAULT_WINDOW_SECONDS, escape_early=False)
-        # start_time
-        with self.assertRaises(AuthTokenError):
-            att.generateToken(start_time=-1)
-        
-        with self.assertRaises(AuthTokenError):
-            att.generateToken(start_time="hello")
-        
-        # end_time
-        with self.assertRaises(AuthTokenError):
-            att.generateToken(end_time=-1)
+        if not (sys.version_info[0] == 2 and sys.version_info[1] <= 6):
+            att = AuthToken(key=AT_ENCRYPTION_KEY, window_seconds=DEFAULT_WINDOW_SECONDS, escape_early=False)
+            # start_time
+            with self.assertRaises(AuthTokenError):
+                att.generateToken(start_time=-1)
+            
+            with self.assertRaises(AuthTokenError):
+                att.generateToken(start_time="hello")
+            
+            # end_time
+            with self.assertRaises(AuthTokenError):
+                att.generateToken(end_time=-1)
 
-        with self.assertRaises(AuthTokenError):
-            att.generateToken(end_time="hello")
-        
-        # window_seconds
-        with self.assertRaises(AuthTokenError):
-            att.generateToken(window_seconds=-1)
+            with self.assertRaises(AuthTokenError):
+                att.generateToken(end_time="hello")
+            
+            # window_seconds
+            with self.assertRaises(AuthTokenError):
+                att.generateToken(window_seconds=-1)
 
-        with self.assertRaises(AuthTokenError):
-            att.generateToken(window_seconds="hello")
+            with self.assertRaises(AuthTokenError):
+                att.generateToken(window_seconds="hello")
     
 
 if __name__ == '__main__':
