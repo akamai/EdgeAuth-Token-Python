@@ -31,18 +31,17 @@ from authtoken import AuthToken, AuthTokenError
 import requests
 
 
-if 'TEST_MODE' in os.environ and os.environ['TEST_MODE'] == 'LOCAL':
-    # export TEST_MODE=LOCAL
+if 'TEST_MODE' in os.environ and os.environ['TEST_MODE'] == 'TRAVIS':
+    AT_HOSTNAME = os.environ['AT_HOSTNAME']
+    AT_ENCRYPTION_KEY = os.environ['AT_ENCRYPTION_KEY']
+    AT_TRANSITION_KEY = os.environ['AT_TRANSITION_KEY']
+    AT_SALT = os.environ['AT_SALT']
+else:
     import secrets
     AT_HOSTNAME = secrets.AT_HOSTNAME
     AT_ENCRYPTION_KEY = secrets.AT_ENCRYPTION_KEY
     AT_TRANSITION_KEY = secrets.AT_TRANSITION_KEY    
     AT_SALT = secrets.AT_SALT
-else:
-    AT_HOSTNAME = os.environ['AT_HOSTNAME']
-    AT_ENCRYPTION_KEY = os.environ['AT_ENCRYPTION_KEY']
-    AT_TRANSITION_KEY = os.environ['AT_TRANSITION_KEY']
-    AT_SALT = os.environ['AT_SALT']
 
 DEFAULT_WINDOW_SECONDS = 500
 
@@ -70,8 +69,6 @@ class TestAuthToken(unittest.TestCase):
         
         if transition:
             t.key = AT_TRANSITION_KEY
-        else:
-            t.key = AT_ENCRYPTION_KEY
         
         t.escape_early = escape_early
 
@@ -79,9 +76,9 @@ class TestAuthToken(unittest.TestCase):
                           payload=None, session_id=None, isUrl=True):
         self._token_setting('q', escape_early, transition)
         if isUrl:
-            token = self.at.generateToken(url=path, payload=None, session_id=None)
+            token = self.at.generateToken(url=path, payload=payload, session_id=session_id)
         else:
-            token = self.at.generateToken(acl=path, payload=None, session_id=None)
+            token = self.at.generateToken(acl=path, payload=payload, session_id=session_id)
  
         url = "http://{0}{1}{4}{2}={3}".format(AT_HOSTNAME, path, self.at.token_name, token,
             '&' if '?' in path else '?')
@@ -92,9 +89,9 @@ class TestAuthToken(unittest.TestCase):
                            payload=None, session_id=None, isUrl=True):
         self._token_setting('c', escape_early, transition)
         if isUrl:
-            token = self.cat.generateToken(url=path, payload=None, session_id=None)
+            token = self.cat.generateToken(url=path, payload=payload, session_id=session_id)
         else:
-            token = self.cat.generateToken(acl=path, payload=None, session_id=None)
+            token = self.cat.generateToken(acl=path, payload=payload, session_id=session_id)
 
         url = "http://{0}{1}".format(AT_HOSTNAME, path)
         response = requests.get(url, cookies={self.cat.token_name: token})
@@ -104,9 +101,9 @@ class TestAuthToken(unittest.TestCase):
                            payload=None, session_id=None, isUrl=True):
         self._token_setting('h', escape_early, transition)
         if isUrl:
-            token = self.hat.generateToken(url=path, payload=None, session_id=None)
+            token = self.hat.generateToken(url=path, payload=payload, session_id=session_id)
         else:
-            token = self.hat.generateToken(acl=path, payload=None, session_id=None)
+            token = self.hat.generateToken(acl=path, payload=payload, session_id=session_id)
 
         url = "http://{0}{1}".format(AT_HOSTNAME, path)
         response = requests.get(url, headers={self.hat.token_name: token})

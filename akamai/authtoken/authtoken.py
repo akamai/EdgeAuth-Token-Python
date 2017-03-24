@@ -110,7 +110,7 @@ class AuthToken:
                 raise AuthTokenError('window_seconds must be numeric')
                 
         if end_time is None:
-            if int(window_seconds or 0) > 0:
+            if window_seconds:
                 if start_time is None:
                     # If we have a window_seconds without a start time,
                     # calculate the end time starting from the current time.
@@ -120,7 +120,7 @@ class AuthToken:
                     end_time = start_time + window_seconds
             else:
                 raise AuthTokenError('You must provide an expiration time or '
-                    'a duration window..')
+                    'a duration window ( > 0 )')
         
         if start_time and (end_time <= start_time):
             raise AuthTokenError('Token will have already expired.')
