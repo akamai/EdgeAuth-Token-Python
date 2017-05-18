@@ -26,7 +26,7 @@ import time
 if sys.version_info[0] >= 3:
     from urllib.parse import quote_plus
 else:
-    from urllib.parse import quote_plus
+    from urllib import quote_plus
 
 # Force the local timezone to be GMT.
 os.environ['TZ'] = 'GMT'
@@ -129,7 +129,7 @@ class AuthToken:
             raise AuthTokenError('You must provide a URL or an ACL')
 
         if self.verbose:
-            print(('''
+            print('''
 Akamai Token Generation Parameters
 Token Type      : {0}
 Token Name      : {1}
@@ -162,7 +162,7 @@ Generating token...'''.format(self.token_type if self.token_type else '', #0
                             url if url else '', #12
                             acl if acl else '', #13
                             payload if payload else '', #14
-                            session_id if session_id else ''))) #15
+                            session_id if session_id else '')) #15
 
         hash_source = []
         new_token = []

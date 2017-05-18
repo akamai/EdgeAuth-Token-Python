@@ -23,7 +23,7 @@ sys.path.append("../akamai/authtoken")
 if sys.version_info[0] >= 3:
     from urllib.parse import quote_plus
 else:
-    from urllib.parse import quote_plus
+    from urllib import quote_plus
 import unittest
 
 from authtoken import AuthToken, AuthTokenError
