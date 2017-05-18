@@ -101,6 +101,6 @@ if __name__ == '__main__':
                                     session_id=options.session_id)
 
     print("### Cookie or Query String ###")
-    print(("{0}={1}".format(options.token_name, token)))
+    print("{0}={1}".format(options.token_name, token))
     print("### Header ###")
-    print(("{0}: {1}".format(options.token_name, token)))
+    print("{0}: {1}".format(options.token_name, token))
