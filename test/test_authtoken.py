@@ -18,14 +18,10 @@
 
 import os
 import sys
-sys.path.append("akamai/authtoken")
-sys.path.append("../akamai/authtoken")
-if sys.version_info[0] >= 3:
-    from urllib.parse import quote_plus
-else:
-    from urllib import quote_plus
 import unittest
 
+sys.path.append("akamai/authtoken")
+sys.path.append("../akamai/authtoken")
 from authtoken import AuthToken, AuthTokenError
 
 import requests
