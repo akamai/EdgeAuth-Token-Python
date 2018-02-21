@@ -3,7 +3,7 @@
 
 import optparse
 
-from akamai.authtoken import AuthToken, AuthTokenError
+from akamai.edgeauth import EdgeAuth, EdgeAuthError
 
 
 if __name__ == '__main__':
@@ -81,7 +81,7 @@ if __name__ == '__main__':
 
     (options, args) = parser.parse_args()
 
-    generator = AuthToken(
+    generator = EdgeAuth(
         token_type=options.token_type,
         token_name=options.token_name,
         key=options.key,

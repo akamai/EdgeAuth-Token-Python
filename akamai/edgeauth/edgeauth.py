@@ -17,12 +17,12 @@ else:
 os.environ['TZ'] = 'GMT'
 
 
-class AuthTokenError(Exception):
+class EdgeAuthError(Exception):
     def __init__(self, text):
         self._text = text
 
     def __str__(self):
-        return 'AuthTokenError:{0}'.format(self._text)
+        return 'EdgeAuthError:{0}'.format(self._text)
 
     def _getText(self):
         return str(self)
@@ -30,7 +30,7 @@ class AuthTokenError(Exception):
         'Formatted error text.')
 
 
-class AuthToken:
+class EdgeAuth:
     ACL_DELIMITER='!'
     
     def __init__(self, token_type=None, token_name='__token__',
@@ -44,7 +44,7 @@ class AuthToken:
         self.end_time = end_time
         self.window_seconds = window_seconds
         if key is None or len(key) <= 0:
-            raise AuthTokenError('You must provide a secret in order to '
+            raise EdgeAuthError('You must provide a secret in order to '
                 'generate a new token.')
         self.key = key
         self.algorithm = algorithm
@@ -76,23 +76,23 @@ class AuthToken:
         elif start_time:
             try:
                 if int(start_time) <= 0:
-                    raise AuthTokenError('start_time must be ( > 0 )')    
+                    raise EdgeAuthError('start_time must be ( > 0 )')    
             except:
-                raise AuthTokenError('start_time must be numeric or now')
+                raise EdgeAuthError('start_time must be numeric or now')
 
         if end_time:
             try:
                 if int(end_time) <= 0:
-                    raise AuthTokenError('end_time must be ( > 0 )')
+                    raise EdgeAuthError('end_time must be ( > 0 )')
             except:
-                raise AuthTokenError('end_time must be numeric')
+                raise EdgeAuthError('end_time must be numeric')
 
         if window_seconds:
             try:
                 if int(window_seconds) <= 0:
-                    raise AuthTokenError('window_seconds must be ( > 0 )')    
+                    raise EdgeAuthError('window_seconds must be ( > 0 )')    
             except:
-                raise AuthTokenError('window_seconds must be numeric')
+                raise EdgeAuthError('window_seconds must be numeric')
                 
         if end_time is None:
             if window_seconds:
@@ -104,14 +104,14 @@ class AuthToken:
                 else:
                     end_time = start_time + window_seconds
             else:
-                raise AuthTokenError('You must provide an expiration time or '
+                raise EdgeAuthError('You must provide an expiration time or '
                     'a duration window ( > 0 )')
         
         if start_time and (end_time <= start_time):
-            raise AuthTokenError('Token will have already expired.')
+            raise EdgeAuthError('Token will have already expired.')
         
         if (not acl and not url) or (acl and url):
-            raise AuthTokenError('You must provide a URL or an ACL')
+            raise EdgeAuthError('You must provide a URL or an ACL')
 
         if self.verbose:
             print('''
@@ -177,7 +177,7 @@ Generating token...'''.format(self.token_type if self.token_type else '', #0
             hash_source.append('salt={0}'.format(self.salt))
 
         if self.algorithm.lower() not in ('sha256', 'sha1', 'md5'):
-            raise AuthTokenError('Unknown algorithm')
+            raise EdgeAuthError('Unknown algorithm')
 
         token_hmac = hmac.new(
             binascii.a2b_hex(self.key.encode()),

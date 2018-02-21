@@ -1,35 +1,35 @@
-Akamai-AuthToken: Akamai Authorization Token for Python
+Akamai-EdgeAuth: Akamai Edge Authorization Token for Python
 =================================================
 
-.. image:: https://img.shields.io/pypi/v/akamai-authtoken.svg
-    :target: https://pypi.python.org/pypi/akamai-authtoken
+.. image:: https://img.shields.io/pypi/v/akamai-edgeauth.svg
+    :target: https://pypi.python.org/pypi/akamai-edgeauth
 
-.. image:: https://travis-ci.org/AstinCHOI/Akamai-AuthToken-Python.svg?branch=master
-    :target: https://travis-ci.org/AstinCHOI/Akamai-AuthToken-Python
+.. image:: https://travis-ci.org/AstinCHOI/Akamai-EdgeAuth-Python.svg?branch=master
+    :target: https://travis-ci.org/AstinCHOI/Akamai-EdgeAuth-Python
 
 .. image:: http://img.shields.io/:license-apache-blue.svg 
-    :target: https://github.com/AstinCHOI/Akamai-AuthToken-Python/blob/master/LICENSE
+    :target: https://github.com/AstinCHOI/Akamai-EdgeAuth-Python/blob/master/LICENSE
 
 
-Akamai-AuthToken is Akamai Authorization Token in the HTTP Cookie, Query String and Header for a client.
+Akamai-EdgeAuth is Akamai Edge Authorization Token in the HTTP Cookie, Query String and Header for a client.
 You can configure it in the Property Manager at https://control.akamai.com.
 It's a behavior which is Auth Token 2.0 Verification.  
 
-Akamai-AuthToken supports Python 2.6–2.7 & 3.3–3.6, and runs great on PyPy. (This is Akamai unofficial code)
+Akamai-EdgeAuth supports Python 2.6–2.7 & 3.3–3.6, and runs great on PyPy. (This is Akamai unofficial code)
 
 
-.. image:: https://github.com/AstinCHOI/akamai-asset/blob/master/authtoken/authtoken.png?raw=true
+.. image:: https://github.com/AstinCHOI/akamai-asset/blob/master/edgeauth/edgeauth.png?raw=true
     :align: center
 
 
 Installation
 ------------
 
-To install Akamai Authorization Token for Python:  
+To install Akamai Edge Authorization Token for Python:  
 
 .. code-block:: bash
 
-    $ pip install akamai-authtoken
+    $ pip install akamai-edgeauth
 
 
 Example
@@ -37,10 +37,10 @@ Example
 
     .. code-block:: python
 
-        from akamai.authtoken import AuthToken, AuthTokenError
+        from akamai.edgeauth import EdgeAuth, EdgeAuthError
         import requests # just for this example
 
-        AT_HOSTNAME = 'auth-token.akamaized.net'
+        AT_HOSTNAME = 'edgeauth.akamaized.net'
         AT_ENCRYPTION_KEY = 'YourEncryptionKey' 
         DURATION = 500 # seconds
 
@@ -54,15 +54,15 @@ Example
     .. code-block:: python
 
         # 1) Cookie
-        at = AuthToken(key=AT_ENCRYPTION_KEY, window_seconds=DURATION, escape_early=True)
-        token = at.generateToken(url="/akamai/authtoken")
-        url = "http://{0}{1}".format(AT_HOSTNAME, "/akamai/authtoken")
+        at = EdgeAuth(key=AT_ENCRYPTION_KEY, window_seconds=DURATION, escape_early=True)
+        token = at.generateToken(url="/akamai/edgeauth")
+        url = "http://{0}{1}".format(AT_HOSTNAME, "/akamai/edgeauth")
         response = requests.get(url, cookies={at.token_name: token})
         print(response) # Maybe not 403
 
         # 2) Query string
-        token = at.generateToken(url="/akamai/authtoken")
-        url = "http://{0}{1}?{2}={3}".format(AT_HOSTNAME, "/akamai/authtoken", at.token_name, token)
+        token = at.generateToken(url="/akamai/edgeauth")
+        url = "http://{0}{1}?{2}={3}".format(AT_HOSTNAME, "/akamai/edgeauth", at.token_name, token)
         response = requests.get(url)
         print(response)
 
@@ -78,17 +78,17 @@ Example
     .. code-block:: python
 
         # 1) Header using *
-        at = AuthToken(key=AT_ENCRYPTION_KEY, window_seconds=DURATION)
-        token = at.generateToken(acl="/akamai/authtoken/list/*")
-        url = "http://{0}{1}".format(AT_HOSTNAME, "/akamai/authtoken/list/something")
+        at = EdgeAuth(key=AT_ENCRYPTION_KEY, window_seconds=DURATION)
+        token = at.generateToken(acl="/akamai/edgeauth/list/*")
+        url = "http://{0}{1}".format(AT_HOSTNAME, "/akamai/edgeauth/list/something")
         response = requests.get(url, headers={at.token_name: token})
         print(response)
 
         # 2) Cookie Delimited by '!'
-        acl = ["/akamai/authtoken", "/akamai/authtoken/list/*"]
-        token = at.generateToken(acl=AuthToken.ACL_DELIMITER.join(acl))
-        url = "http://{0}{1}".format(AT_HOSTNAME, "/akamai/authtoken/list/something2")
-            # or "/akamai/authtoken"
+        acl = ["/akamai/edgeauth", "/akamai/edgeauth/list/*"]
+        token = at.generateToken(acl=EdgeAuth.ACL_DELIMITER.join(acl))
+        url = "http://{0}{1}".format(AT_HOSTNAME, "/akamai/edgeauth/list/something2")
+            # or "/akamai/edgeauth"
         response = requests.get(url, cookies={at.token_name: token})
         print(response)
 
@@ -99,11 +99,11 @@ Example
 
 Usage
 -----
-**AuthToken Class**
+**EdgeAuth Class**
 
 .. code-block:: python
 
-    AuthToken(token_type=None, token_name='__token__', key=None, algorithm='sha256', 
+    EdgeAuth(token_type=None, token_name='__token__', key=None, algorithm='sha256', 
             salt=None, start_time=None, end_time=None, window_seconds=None,
             field_delimiter='~', escape_early=False, verbose=False)
 
@@ -125,14 +125,14 @@ Usage
      verbose               Print all parameters.
     ====================  ===================================================================================================
 
-**AuthToken's Static Variable**
+**EdgeAuth's Static Variable**
 
 .. code-block:: python
 
     ACL_DELIMITER = '!' # Character used to delimit acl fields.
 
 
-**AuthToken's Method**
+**EdgeAuth's Method**
 
 .. code-block:: python
 
@@ -167,6 +167,6 @@ Command
 
 .. code-block:: bash
 
-    $ python cms_authtoken.py -k YourEncryptionKey -w 5000 -u /hello/world -x
+    $ python cms_edgeauth.py -k YourEncryptionKey -w 5000 -u /hello/world -x
 
 Use -h or --help option for the detail.

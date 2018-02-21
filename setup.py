@@ -7,17 +7,17 @@ with open('README.rst', 'r') as f:
     readme = f.read()
 
 setup (
-    name = 'akamai-authtoken',
-    version = '0.4.3',
-    description = 'Akamai Authorization Token for Configuration',
+    name = 'akamai-edgeauth',
+    version = '0.1.0',
+    description = 'Akamai Edge Authorization Token for Property Manager Behavior',
     long_description = readme,
     namespace_packages=['akamai'],
     packages=find_packages(exclude=['spike']),
     author = 'Astin Choi',
     author_email = 'asciineo@gmail.com',
-    url = 'https://github.com/AstinCHOI/Akamai-AuthToken-Python',
+    url = 'https://github.com/AstinCHOI/Akamai-EdgeAuth-Python',
     license='Apache 2.0',
-    keywords='authtoken auth token akamai openapi open api',
+    keywords='edgeauth auth token akamai openapi open api',
     classifiers=(
         'Intended Audience :: Developers',
         'Programming Language :: Python',

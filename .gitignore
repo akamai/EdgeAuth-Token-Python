@@ -89,6 +89,7 @@ ENV/
 .ropeproject
 
 # Others
+.vscode
 .DS_Store
 test/secrets.py
 spike/
