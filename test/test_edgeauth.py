@@ -13,16 +13,16 @@ import requests
 
 
 if 'TEST_MODE' in os.environ and os.environ['TEST_MODE'] == 'TRAVIS':
-    AT_HOSTNAME = os.environ['AT_HOSTNAME']
-    AT_ENCRYPTION_KEY = os.environ['AT_ENCRYPTION_KEY']
-    AT_TRANSITION_KEY = os.environ['AT_TRANSITION_KEY']
-    AT_SALT = os.environ['AT_SALT']
+    ET_HOSTNAME = os.environ['ET_HOSTNAME']
+    ET_ENCRYPTION_KEY = os.environ['ET_ENCRYPTION_KEY']
+    ET_TRANSITION_KEY = os.environ['ET_TRANSITION_KEY']
+    ET_SALT = os.environ['ET_SALT']
 else:
     import secrets
-    AT_HOSTNAME = secrets.AT_HOSTNAME
-    AT_ENCRYPTION_KEY = secrets.AT_ENCRYPTION_KEY
-    AT_TRANSITION_KEY = secrets.AT_TRANSITION_KEY    
-    AT_SALT = secrets.AT_SALT
+    ET_HOSTNAME = secrets.ET_HOSTNAME
+    ET_ENCRYPTION_KEY = secrets.ET_ENCRYPTION_KEY
+    ET_TRANSITION_KEY = secrets.ET_TRANSITION_KEY    
+    ET_SALT = secrets.ET_SALT
 
 DEFAULT_WINDOW_SECONDS = 500
 
@@ -31,13 +31,13 @@ class TestEdgeAuth(unittest.TestCase):
 
     def setUp(self):
         # Test for Query String
-        self.at = EdgeAuth(**{'key': AT_ENCRYPTION_KEY, 'window_seconds': DEFAULT_WINDOW_SECONDS})
+        self.at = EdgeAuth(**{'key': ET_ENCRYPTION_KEY, 'window_seconds': DEFAULT_WINDOW_SECONDS})
         
         # Test for Cookie
-        self.cat = EdgeAuth(key=AT_ENCRYPTION_KEY, algorithm='sha1', window_seconds=DEFAULT_WINDOW_SECONDS)
+        self.cat = EdgeAuth(key=ET_ENCRYPTION_KEY, algorithm='sha1', window_seconds=DEFAULT_WINDOW_SECONDS)
 
         # Test for Header
-        self.hat = EdgeAuth(key=AT_ENCRYPTION_KEY, algorithm='md5', window_seconds=DEFAULT_WINDOW_SECONDS)
+        self.hat = EdgeAuth(key=ET_ENCRYPTION_KEY, algorithm='md5', window_seconds=DEFAULT_WINDOW_SECONDS)
 
     def _token_setting(self, ttype, escape_early, transition):
         t = None
@@ -49,7 +49,7 @@ class TestEdgeAuth(unittest.TestCase):
             t = self.hat
         
         if transition:
-            t.key = AT_TRANSITION_KEY
+            t.key = ET_TRANSITION_KEY
         
         t.escape_early = escape_early
 
@@ -61,7 +61,7 @@ class TestEdgeAuth(unittest.TestCase):
         else:
             token = self.at.generateToken(acl=path, payload=payload, session_id=session_id)
  
-        url = "http://{0}{1}{4}{2}={3}".format(AT_HOSTNAME, path, self.at.token_name, token,
+        url = "http://{0}{1}{4}{2}={3}".format(ET_HOSTNAME, path, self.at.token_name, token,
             '&' if '?' in path else '?')
         response = requests.get(url)
         self.assertEqual(expacted, response.status_code)
@@ -74,7 +74,7 @@ class TestEdgeAuth(unittest.TestCase):
         else:
             token = self.cat.generateToken(acl=path, payload=payload, session_id=session_id)
 
-        url = "http://{0}{1}".format(AT_HOSTNAME, path)
+        url = "http://{0}{1}".format(ET_HOSTNAME, path)
         response = requests.get(url, cookies={self.cat.token_name: token})
         self.assertEqual(expacted, response.status_code)
 
@@ -86,7 +86,7 @@ class TestEdgeAuth(unittest.TestCase):
         else:
             token = self.hat.generateToken(acl=path, payload=payload, session_id=session_id)
 
-        url = "http://{0}{1}".format(AT_HOSTNAME, path)
+        url = "http://{0}{1}".format(ET_HOSTNAME, path)
         response = requests.get(url, headers={self.hat.token_name: token})
         self.assertEqual(expacted, response.status_code)
         
@@ -151,9 +151,9 @@ class TestEdgeAuth(unittest.TestCase):
     
     def test_url_query_escape_on__ignore_yes_with_salt(self):
         query_salt_path = "/salt"
-        ats = EdgeAuth(key=AT_ENCRYPTION_KEY, salt=AT_SALT, window_seconds=DEFAULT_WINDOW_SECONDS, escape_early=True)
+        ats = EdgeAuth(key=ET_ENCRYPTION_KEY, salt=ET_SALT, window_seconds=DEFAULT_WINDOW_SECONDS, escape_early=True)
         token = ats.generateToken(url=query_salt_path)
-        url = "http://{0}{1}?{2}={3}".format(AT_HOSTNAME, query_salt_path, ats.token_name, token)
+        url = "http://{0}{1}?{2}={3}".format(ET_HOSTNAME, query_salt_path, ats.token_name, token)
         response = requests.get(url)
         self.assertEqual(404, response.status_code)
     ##########
@@ -174,28 +174,28 @@ class TestEdgeAuth(unittest.TestCase):
         self._test_case_set("/q", "/c", "/h", escape_early=False, isUrl=False)
     
     def test_acl_asta_escape_on__ignoreQuery_yes(self):
-        ata = EdgeAuth(key=AT_ENCRYPTION_KEY, window_seconds=DEFAULT_WINDOW_SECONDS, escape_early=False)
+        ata = EdgeAuth(key=ET_ENCRYPTION_KEY, window_seconds=DEFAULT_WINDOW_SECONDS, escape_early=False)
         token = ata.generateToken(acl='/q_escape_ignore/*')
-        url = "http://{0}{1}?{2}={3}".format(AT_HOSTNAME, '/q_escape_ignore/hello', ata.token_name, token)
+        url = "http://{0}{1}?{2}={3}".format(ET_HOSTNAME, '/q_escape_ignore/hello', ata.token_name, token)
         response = requests.get(url)
         self.assertEqual(404, response.status_code)
     
     def test_acl_deli_escape_on__ignoreQuery_yes(self):
-        atd = EdgeAuth(key=AT_ENCRYPTION_KEY, window_seconds=DEFAULT_WINDOW_SECONDS, escape_early=False)
+        atd = EdgeAuth(key=ET_ENCRYPTION_KEY, window_seconds=DEFAULT_WINDOW_SECONDS, escape_early=False)
         acl = ['/q_escape_ignore', '/q_escape_ignore/*']
         token = atd.generateToken(acl=EdgeAuth.ACL_DELIMITER.join(acl))
-        url = "http://{0}{1}?{2}={3}".format(AT_HOSTNAME, '/q_escape_ignore', atd.token_name, token)
+        url = "http://{0}{1}?{2}={3}".format(ET_HOSTNAME, '/q_escape_ignore', atd.token_name, token)
         response = requests.get(url)
         self.assertEqual(404, response.status_code)
 
-        url = "http://{0}{1}?{2}={3}".format(AT_HOSTNAME, '/q_escape_ignore/world/', atd.token_name, token)
+        url = "http://{0}{1}?{2}={3}".format(ET_HOSTNAME, '/q_escape_ignore/world/', atd.token_name, token)
         response = requests.get(url)
         self.assertEqual(404, response.status_code)
     ##########
 
     def test_times(self):
         if not (sys.version_info[0] == 2 and sys.version_info[1] <= 6):
-            att = EdgeAuth(key=AT_ENCRYPTION_KEY, window_seconds=DEFAULT_WINDOW_SECONDS, escape_early=False)
+            att = EdgeAuth(key=ET_ENCRYPTION_KEY, window_seconds=DEFAULT_WINDOW_SECONDS, escape_early=False)
             # start_time
             with self.assertRaises(EdgeAuthError):
                 att.generateToken(start_time=-1)

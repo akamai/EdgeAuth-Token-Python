@@ -8,7 +8,7 @@ with open('README.rst', 'r') as f:
 
 setup (
     name = 'akamai-edgeauth',
-    version = '0.1.0',
+    version = '0.1.1',
     description = 'Akamai Edge Authorization Token for Property Manager Behavior',
     long_description = readme,
     namespace_packages=['akamai'],

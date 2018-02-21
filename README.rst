@@ -1,5 +1,5 @@
 Akamai-EdgeAuth: Akamai Edge Authorization Token for Python
-=================================================
+===========================================================
 
 .. image:: https://img.shields.io/pypi/v/akamai-edgeauth.svg
     :target: https://pypi.python.org/pypi/akamai-edgeauth
@@ -40,29 +40,29 @@ Example
         from akamai.edgeauth import EdgeAuth, EdgeAuthError
         import requests # just for this example
 
-        AT_HOSTNAME = 'edgeauth.akamaized.net'
-        AT_ENCRYPTION_KEY = 'YourEncryptionKey' 
+        ET_HOSTNAME = 'edgeauth.akamaized.net'
+        ET_ENCRYPTION_KEY = 'YourEncryptionKey' 
         DURATION = 500 # seconds
 
     ::
 
-        AT_ENCRYPTION_KEY must be hexadecimal digit string with even-length.
-        Don't expose AT_ENCRYPTION_KEY on the public repository.
+        ET_ENCRYPTION_KEY must be hexadecimal digit string with even-length.
+        Don't expose ET_ENCRYPTION_KEY on the public repository.
 
 **URL parameter option**
 
     .. code-block:: python
 
         # 1) Cookie
-        at = EdgeAuth(key=AT_ENCRYPTION_KEY, window_seconds=DURATION, escape_early=True)
+        at = EdgeAuth(key=ET_ENCRYPTION_KEY, window_seconds=DURATION, escape_early=True)
         token = at.generateToken(url="/akamai/edgeauth")
-        url = "http://{0}{1}".format(AT_HOSTNAME, "/akamai/edgeauth")
+        url = "http://{0}{1}".format(ET_HOSTNAME, "/akamai/edgeauth")
         response = requests.get(url, cookies={at.token_name: token})
         print(response) # Maybe not 403
 
         # 2) Query string
         token = at.generateToken(url="/akamai/edgeauth")
-        url = "http://{0}{1}?{2}={3}".format(AT_HOSTNAME, "/akamai/edgeauth", at.token_name, token)
+        url = "http://{0}{1}?{2}={3}".format(ET_HOSTNAME, "/akamai/edgeauth", at.token_name, token)
         response = requests.get(url)
         print(response)
 
@@ -78,16 +78,16 @@ Example
     .. code-block:: python
 
         # 1) Header using *
-        at = EdgeAuth(key=AT_ENCRYPTION_KEY, window_seconds=DURATION)
+        at = EdgeAuth(key=ET_ENCRYPTION_KEY, window_seconds=DURATION)
         token = at.generateToken(acl="/akamai/edgeauth/list/*")
-        url = "http://{0}{1}".format(AT_HOSTNAME, "/akamai/edgeauth/list/something")
+        url = "http://{0}{1}".format(ET_HOSTNAME, "/akamai/edgeauth/list/something")
         response = requests.get(url, headers={at.token_name: token})
         print(response)
 
         # 2) Cookie Delimited by '!'
         acl = ["/akamai/edgeauth", "/akamai/edgeauth/list/*"]
         token = at.generateToken(acl=EdgeAuth.ACL_DELIMITER.join(acl))
-        url = "http://{0}{1}".format(AT_HOSTNAME, "/akamai/edgeauth/list/something2")
+        url = "http://{0}{1}".format(ET_HOSTNAME, "/akamai/edgeauth/list/something2")
             # or "/akamai/edgeauth"
         response = requests.get(url, cookies={at.token_name: token})
         print(response)
