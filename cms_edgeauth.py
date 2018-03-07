@@ -38,16 +38,16 @@ if __name__ == '__main__':
         help='When does this token expire? --end_time overrides --window')
     parser.add_option(
         '-w', '--window',
-        action='store', type='string', dest='window_seconds',
+        action='store', type='int', dest='window_seconds',
         help='How long is this token valid for?')
     parser.add_option(
         '-d', '--field_delimiter',
         action='store', default='~', type='string', dest='field_delimiter',
         help='Character used to delimit token body fields. [Default:~]')
-    parser.add_option(
-        '-D', '--acl_delimiter',
-        action='store', default='!', type='string', dest='acl_delimiter',
-        help='Character used to delimit acl fields. [Default:!]')
+    # parser.add_option(
+    #     '-D', '--acl_delimiter',
+    #     action='store', default='!', type='string', dest='acl_delimiter',
+    #     help='Character used to delimit acl fields. [Default:!]')
     parser.add_option(
         '-x', '--escape_early',
         action='store_true', default=False, dest='escape_early',
@@ -88,7 +88,7 @@ if __name__ == '__main__':
         algorithm=options.algorithm,
         salt=options.salt,
         field_delimiter=options.field_delimiter,
-        acl_delimiter=options.acl_delimiter,
+        # acl_delimiter=options.acl_delimiter,
         escape_early=options.escape_early,
         verbose=options.verbose)
     token = generator.generateToken(url=options.url,
