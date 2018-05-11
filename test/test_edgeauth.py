@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-
 import os
 import sys
 import unittest
@@ -10,6 +9,7 @@ sys.path.append("../akamai/edgeauth")
 from edgeauth import EdgeAuth, EdgeAuthError
 
 import requests
+from requests.utils import quote
 
 
 if 'TEST_MODE' in os.environ and os.environ['TEST_MODE'] == 'TRAVIS':
@@ -39,7 +39,7 @@ class TestEdgeAuth(unittest.TestCase):
         # Test for Header
         self.hat = EdgeAuth(key=ET_ENCRYPTION_KEY, algorithm='md5', window_seconds=DEFAULT_WINDOW_SECONDS)
 
-    def _token_setting(self, ttype, escape_early, transition):
+    def _token_setting(self, ttype, escape_early, transition, payload, session_id):
         t = None
         if ttype == 'q':
             t = self.at
@@ -50,109 +50,127 @@ class TestEdgeAuth(unittest.TestCase):
         
         if transition:
             t.key = ET_TRANSITION_KEY
-        
-        t.escape_early = escape_early
 
-    def _queryAssertEqual(self, path, expacted, escape_early=False, transition=False,
-                          payload=None, session_id=None, isUrl=True):
-        self._token_setting('q', escape_early, transition)
-        if isUrl:
-            token = self.at.generateToken(url=path, payload=payload, session_id=session_id)
+        t.payload = payload
+        t.session_id = session_id
+        t.escape_early = escape_early
+        
+    def _queryAssertEqual(self, path, auth_path, expacted, escape_early=False, transition=False,
+                          payload=None, session_id=None, is_url=True):
+        self._token_setting('q', escape_early, transition, payload, session_id)
+                
+        if is_url:
+            token = self.at.generate_url_token(auth_path)
         else:
-            token = self.at.generateToken(acl=path, payload=payload, session_id=session_id)
+            token = self.at.generate_acl_token(auth_path)
  
         url = "http://{0}{1}{4}{2}={3}".format(ET_HOSTNAME, path, self.at.token_name, token,
             '&' if '?' in path else '?')
         response = requests.get(url)
         self.assertEqual(expacted, response.status_code)
     
-    def _cookieAssertEqual(self, path, expacted, escape_early=False, transition=False,
-                           payload=None, session_id=None, isUrl=True):
-        self._token_setting('c', escape_early, transition)
-        if isUrl:
-            token = self.cat.generateToken(url=path, payload=payload, session_id=session_id)
+    def _cookieAssertEqual(self, path, auth_path, expacted, escape_early=False, transition=False,
+                           payload=None, session_id=None, is_url=True):
+        self._token_setting('c', escape_early, transition, payload, session_id)
+        if is_url:
+            token = self.cat.generate_url_token(auth_path)
         else:
-            token = self.cat.generateToken(acl=path, payload=payload, session_id=session_id)
+            token = self.cat.generate_acl_token(auth_path)
 
         url = "http://{0}{1}".format(ET_HOSTNAME, path)
         response = requests.get(url, cookies={self.cat.token_name: token})
         self.assertEqual(expacted, response.status_code)
 
-    def _headerAssertEqual(self, path, expacted, escape_early=False, transition=False,
-                           payload=None, session_id=None, isUrl=True):
-        self._token_setting('h', escape_early, transition)
-        if isUrl:
-            token = self.hat.generateToken(url=path, payload=payload, session_id=session_id)
+    def _headerAssertEqual(self, path, auth_path, expacted, escape_early=False, transition=False,
+                           payload=None, session_id=None, is_url=True):
+        self._token_setting('h', escape_early, transition, payload, session_id)
+        if is_url:
+            token = self.hat.generate_url_token(auth_path)
         else:
-            token = self.hat.generateToken(acl=path, payload=payload, session_id=session_id)
+            token = self.hat.generate_acl_token(auth_path)
 
         url = "http://{0}{1}".format(ET_HOSTNAME, path)
         response = requests.get(url, headers={self.hat.token_name: token})
         self.assertEqual(expacted, response.status_code)
-        
-    def _test_case_set(self, query_path, cookie_path, header_path, escape_early, isUrl):
+
+    def _test_case_set(self, query_path, query_auth_path,
+                             cookie_path, cookie_auth_path,
+                             header_path, header_auth_path,
+                             escape_early, is_url):
         # General Test
-        self._queryAssertEqual(query_path, 404, escape_early=escape_early, isUrl=isUrl)
-        self._cookieAssertEqual(cookie_path, 404, escape_early=escape_early, isUrl=isUrl)
-        self._headerAssertEqual(header_path, 404, escape_early=escape_early, isUrl=isUrl)
-
-
-        if isUrl:
-            query_string="?foo=bar&hello=world"
-            self._queryAssertEqual(query_path + query_string, 403, escape_early=(False==escape_early), isUrl=isUrl)
-            self._cookieAssertEqual(cookie_path + query_string, 403, escape_early=(False==escape_early), isUrl=isUrl)
-            self._headerAssertEqual(header_path + query_string, 403, escape_early=(False==escape_early), isUrl=isUrl)
+        self._queryAssertEqual(query_path, query_auth_path, 404, escape_early=escape_early, is_url=is_url)
+        self._cookieAssertEqual(cookie_path, cookie_auth_path, 404, escape_early=escape_early, is_url=is_url)
+        self._headerAssertEqual(header_path, header_auth_path, 404, escape_early=escape_early, is_url=is_url)
 
         # Transition Key Test
-        self._queryAssertEqual(query_path, 404, transition=True, escape_early=escape_early, isUrl=isUrl)
-        self._cookieAssertEqual(cookie_path, 404, transition=True, escape_early=escape_early, isUrl=isUrl)
-        self._headerAssertEqual(header_path, 404, transition=True, escape_early=escape_early, isUrl=isUrl)
+        self._queryAssertEqual(query_path, query_auth_path, 404, transition=True, escape_early=escape_early, is_url=is_url)
+        self._cookieAssertEqual(cookie_path, cookie_auth_path, 404, transition=True, escape_early=escape_early, is_url=is_url)
+        self._headerAssertEqual(header_path, header_auth_path, 404, transition=True, escape_early=escape_early, is_url=is_url)
 
         # Payload Test
-        self._queryAssertEqual(query_path, 404, payload='SOME_PAYLOAD_DATA', escape_early=escape_early, isUrl=isUrl)
-        self._cookieAssertEqual(cookie_path, 404, payload='SOME_PAYLOAD_DATA', escape_early=escape_early, isUrl=isUrl)
-        self._headerAssertEqual(header_path, 404, payload='SOME_PAYLOAD_DATA', escape_early=escape_early, isUrl=isUrl)
+        self._queryAssertEqual(query_path, query_auth_path, 404, payload='SOME_PAYLOAD_DATA', escape_early=escape_early, is_url=is_url)
+        self._cookieAssertEqual(cookie_path, cookie_auth_path, 404, payload='SOME_PAYLOAD_DATA', escape_early=escape_early, is_url=is_url)
+        self._headerAssertEqual(header_path, header_auth_path, 404, payload='SOME_PAYLOAD_DATA', escape_early=escape_early, is_url=is_url)
 
         # Session Id Test
-        self._queryAssertEqual(query_path, 404, session_id='SOME_SESSION_ID_DATA', escape_early=escape_early, isUrl=isUrl)
-        self._cookieAssertEqual(cookie_path, 404, session_id='SOME_SESSION_ID_DATA', escape_early=escape_early, isUrl=isUrl)
-        self._headerAssertEqual(header_path, 404, session_id='SOME_SESSION_ID_DATA', escape_early=escape_early, isUrl=isUrl)
+        self._queryAssertEqual(query_path, query_auth_path, 404, session_id='SOME_SESSION_ID_DATA', escape_early=escape_early, is_url=is_url)
+        self._cookieAssertEqual(cookie_path, cookie_auth_path, 404, session_id='SOME_SESSION_ID_DATA', escape_early=escape_early, is_url=is_url)
+        self._headerAssertEqual(header_path, header_auth_path, 404, session_id='SOME_SESSION_ID_DATA', escape_early=escape_early, is_url=is_url)
     
     ##########
     # URL TEST
     ##########
     def test_url_escape_on__ignoreQuery_yes(self):
-        self._test_case_set("/q_escape_ignore", "/c_escape_ignore", "/h_escape_ignore", escape_early=True, isUrl=True)
+        self._test_case_set("/q_escape_ignore?hello=world", "/q_escape_ignore", 
+                            "/c_escape_ignore", "/c_escape_ignore", 
+                            "/h_escape_ignore", "/h_escape_ignore", 
+                            escape_early=True, is_url=True)
 
     def test_url_escape_off__ignoreQuery_yes(self):
-        self._test_case_set("/q_ignore", "/c_ignore", "/h_ignore", escape_early=False, isUrl=True)
+        self._test_case_set("/q_ignore", "/q_ignore", 
+                            "/c_ignore?1=2", "/c_ignore", 
+                            "/h_ignore", "/h_ignore",
+                            escape_early=False, is_url=True)
 
     def test_url_escape_on__ignoreQuery_no(self):
         query_path = "/q_escape"
         cookie_path = "/c_escape"
         header_path = "/h_escape"
-        self._test_case_set(query_path, cookie_path, header_path, escape_early=True, isUrl=True)
 
-        query_string="?foo=bar&hello=world"
-        self._queryAssertEqual(query_path + query_string, 404, escape_early=True, isUrl=True)
-        self._cookieAssertEqual(cookie_path + query_string, 404, escape_early=True, isUrl=True)
-        self._headerAssertEqual(header_path + query_string, 404, escape_early=True, isUrl=True)
+        self._test_case_set(query_path, query_path, 
+                            cookie_path, cookie_path, 
+                            header_path, header_path, 
+                            escape_early=True, is_url=True)
+
+        query_path = "/q_escape?" + quote("안녕=세상") 
+        cookie_path = "/c_escape?" + quote("hello=world")
+        header_path = "/h_escape?" + quote("1=2")
+        self._test_case_set(query_path, query_path, 
+                            cookie_path, cookie_path, 
+                            header_path, header_path, 
+                            escape_early=True, is_url=True)
 
     def test_url_escape_off__ignoreQuery_no(self):
         query_path = "/q"
         cookie_path = "/c"
         header_path = "/h"
-        self._test_case_set(query_path, cookie_path, header_path, escape_early=False, isUrl=True)
-        
-        query_string="?foo=bar&hello=world"
-        self._queryAssertEqual(query_path + query_string, 404, escape_early=False, isUrl=True)
-        self._cookieAssertEqual(cookie_path + query_string, 404, escape_early=False, isUrl=True)
-        self._headerAssertEqual(header_path + query_string, 404, escape_early=False, isUrl=True)
-    
+        self._test_case_set(query_path, query_path, 
+                            cookie_path, cookie_path, 
+                            header_path, header_path, 
+                            escape_early=False, is_url=True)
+
+        query_path = "/q" + quote("1=2")
+        cookie_path = "/c" + quote("안녕=세상")
+        header_path = "/h" + quote("hello=world")
+        self._test_case_set(query_path, query_path, 
+                            cookie_path, cookie_path, 
+                            header_path, header_path, 
+                            escape_early=False, is_url=True)
+   
     def test_url_query_escape_on__ignore_yes_with_salt(self):
         query_salt_path = "/salt"
         ats = EdgeAuth(key=ET_ENCRYPTION_KEY, salt=ET_SALT, window_seconds=DEFAULT_WINDOW_SECONDS, escape_early=True)
-        token = ats.generateToken(url=query_salt_path)
+        token = ats.generate_url_token(query_salt_path)
         url = "http://{0}{1}?{2}={3}".format(ET_HOSTNAME, query_salt_path, ats.token_name, token)
         response = requests.get(url)
         self.assertEqual(404, response.status_code)
@@ -162,20 +180,32 @@ class TestEdgeAuth(unittest.TestCase):
     # ACL TEST
     ##########
     def test_acl_escape_on__ignoreQuery_yes(self):
-        self._test_case_set("/q_escape_ignore", "/c_escape_ignore", "/h_escape_ignore", escape_early=False, isUrl=False)
+        self._test_case_set("/q_escape_ignore/안녕", "/q_escape_ignore/*",
+                            "/c_escape_ignore/", "/c_escape_ignore/*",
+                            "/h_escape_ignore/hello", "/h_escape_ignore/*",
+                            escape_early=False, is_url=False)
 
     def test_acl_escape_off__ignoreQuery_yes(self):
-        self._test_case_set("/q_ignore", "/c_ignore", "/h_ignore", escape_early=False, isUrl=False)
+        self._test_case_set("/q_ignore/world", "/q_ignore/??r??",
+                            "/c_ignore/a", "/c_ignore/?", 
+                            "/h_ignore/112", "/h_ignore/??*", 
+                            escape_early=False, is_url=False)
 
     def test_acl_escape_on__ignoreQuery_no(self):
-        self._test_case_set("/q_escape", "/c_escape", "/h_escape", escape_early=False, isUrl=False)
+        self._test_case_set("/q_escape/" + quote("안"), "/q_escape/?????????", 
+                            "/c_escape/a/b/c/d", "/c_escape/*",
+                            "/h_escape/1/2", "/h_escape/*",
+                            escape_early=False, is_url=False)
 
     def test_acl_escape_off__ignoreQuery_no(self):
-        self._test_case_set("/q", "/c", "/h", escape_early=False, isUrl=False)
+        self._test_case_set("/q/abc", "/q/???", 
+                            "/c/세상/안녕", "/c/*",
+                            "/h", "/h",
+                            escape_early=False, is_url=False)
     
     def test_acl_asta_escape_on__ignoreQuery_yes(self):
         ata = EdgeAuth(key=ET_ENCRYPTION_KEY, window_seconds=DEFAULT_WINDOW_SECONDS, escape_early=False)
-        token = ata.generateToken(acl='/q_escape_ignore/*')
+        token = ata.generate_acl_token('/q_escape_ignore/*')
         url = "http://{0}{1}?{2}={3}".format(ET_HOSTNAME, '/q_escape_ignore/hello', ata.token_name, token)
         response = requests.get(url)
         self.assertEqual(404, response.status_code)
@@ -183,7 +213,7 @@ class TestEdgeAuth(unittest.TestCase):
     def test_acl_deli_escape_on__ignoreQuery_yes(self):
         atd = EdgeAuth(key=ET_ENCRYPTION_KEY, window_seconds=DEFAULT_WINDOW_SECONDS, escape_early=False)
         acl = ['/q_escape_ignore', '/q_escape_ignore/*']
-        token = atd.generateToken(acl=EdgeAuth.ACL_DELIMITER.join(acl))
+        token = atd.generate_acl_token(acl)
         url = "http://{0}{1}?{2}={3}".format(ET_HOSTNAME, '/q_escape_ignore', atd.token_name, token)
         response = requests.get(url)
         self.assertEqual(404, response.status_code)
@@ -198,25 +228,31 @@ class TestEdgeAuth(unittest.TestCase):
             att = EdgeAuth(key=ET_ENCRYPTION_KEY, window_seconds=DEFAULT_WINDOW_SECONDS, escape_early=False)
             # start_time
             with self.assertRaises(EdgeAuthError):
-                att.generateToken(start_time=-1)
+                att.start_time=-1
+                att.generate_url_token("/")
             
             with self.assertRaises(EdgeAuthError):
-                att.generateToken(start_time="hello")
+                att.start_time="hello"
+                att.generate_url_token("/")
             
             # end_time
             with self.assertRaises(EdgeAuthError):
-                att.generateToken(end_time=-1)
+                att.end_time=-1
+                att.generate_url_token("/")
 
             with self.assertRaises(EdgeAuthError):
-                att.generateToken(end_time="hello")
+                att.end_time="hello"
+                att.generate_url_token("/")
             
             # window_seconds
             with self.assertRaises(EdgeAuthError):
-                att.generateToken(window_seconds=-1)
+                att.window_seconds=-1
+                att.generate_url_token("/")
 
             with self.assertRaises(EdgeAuthError):
-                att.generateToken(window_seconds="hello")
-    
+                att.window_seconds="hello"
+                att.generate_url_token("/")
+
 
 if __name__ == '__main__':
     unittest.main()

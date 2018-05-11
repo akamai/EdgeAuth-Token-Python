@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-
 import binascii
 import hashlib
 import hmac
@@ -31,29 +30,37 @@ class EdgeAuthError(Exception):
 
 
 class EdgeAuth:
-    ACL_DELIMITER='!'
-    
     def __init__(self, token_type=None, token_name='__token__',
                  key=None, algorithm='sha256', salt=None,
+                 ip=None, payload=None, session_id=None,
                  start_time=None, end_time=None, window_seconds=None,
-                 field_delimiter='~', escape_early=False, verbose=False):
+                 field_delimiter='~', acl_delimiter='!',
+                 escape_early=False, verbose=False):
         
-        self.token_type = token_type
-        self.token_name = token_name
-        self.start_time = start_time
-        self.end_time = end_time
-        self.window_seconds = window_seconds
         if key is None or len(key) <= 0:
             raise EdgeAuthError('You must provide a secret in order to '
                 'generate a new token.')
+
+        if algorithm.lower() not in ('sha256', 'sha1', 'md5'):
+            raise EdgeAuthError('Unknown algorithm')
+
+        self.token_type = token_type
+        self.token_name = token_name
         self.key = key
         self.algorithm = algorithm
         self.salt = salt
+        self.ip = ip
+        self.payload = payload
+        self.session_id = session_id
+        self.start_time = start_time
+        self.end_time = end_time
+        self.window_seconds = window_seconds
         self.field_delimiter = field_delimiter
+        self.acl_delimiter = acl_delimiter
         self.escape_early = escape_early
         self.verbose = verbose
 
-    def _escapeEarly(self, text):
+    def _escape_early(self, text):
         if self.escape_early:
             def toLower(match):
                 return match.group(1).lower()
@@ -61,123 +68,106 @@ class EdgeAuth:
         else:
             return text
 
-    def generateToken(self, url=None, acl=None, start_time=None, 
-                       end_time=None, window_seconds=None,
-                       ip=None, payload=None, session_id=None):
-        if not start_time:
-            start_time = self.start_time
-        if not end_time:
-            end_time = self.end_time
-        if not window_seconds:
-            window_seconds = self.window_seconds
-
-        if str(start_time).lower() == 'now':
-            start_time = int(time.mktime(time.gmtime()))
-        elif start_time:
+    def _generate_token(self, path, is_url):
+        if str(self.start_time).lower() == 'now':
+            self.start_time = int(time.mktime(time.gmtime()))
+        elif self.start_time:
             try:
-                if int(start_time) <= 0:
+                if int(self.start_time) <= 0:
                     raise EdgeAuthError('start_time must be ( > 0 )')    
             except:
                 raise EdgeAuthError('start_time must be numeric or now')
 
-        if end_time:
+        if self.end_time:
             try:
-                if int(end_time) <= 0:
+                if int(self.end_time) <= 0:
                     raise EdgeAuthError('end_time must be ( > 0 )')
             except:
                 raise EdgeAuthError('end_time must be numeric')
 
-        if window_seconds:
+        if self.window_seconds:
             try:
-                if int(window_seconds) <= 0:
-                    raise EdgeAuthError('window_seconds must be ( > 0 )')    
+                if int(self.window_seconds) <= 0:
+                    raise EdgeAuthError('window_seconds must be ( > 0 )')
             except:
                 raise EdgeAuthError('window_seconds must be numeric')
                 
-        if end_time is None:
-            if window_seconds:
-                if start_time is None:
+        if self.end_time is None:
+            if self.window_seconds:
+                if self.start_time is None:
                     # If we have a window_seconds without a start time,
                     # calculate the end time starting from the current time.
-                    end_time = int(time.mktime(time.gmtime())) + \
-                        window_seconds
+                    self.end_time = int(time.mktime(time.gmtime())) + \
+                        self.window_seconds
                 else:
-                    end_time = start_time + window_seconds
+                    self.end_time = self.start_time + self.window_seconds
             else:
                 raise EdgeAuthError('You must provide an expiration time or '
                     'a duration window ( > 0 )')
         
-        if start_time and (end_time <= start_time):
+        if self.start_time and (self.end_time <= self.start_time):
             raise EdgeAuthError('Token will have already expired.')
-        
-        if (not acl and not url) or (acl and url):
-            raise EdgeAuthError('You must provide a URL or an ACL')
 
         if self.verbose:
             print('''
 Akamai Token Generation Parameters
 Token Type      : {0}
 Token Name      : {1}
+Key/Secret      : {2}
+Algo            : {3}
+Salt            : {4}
+IP              : {5}
+Payload         : {6}
+Session ID      : {7}
 Start Time      : {8}
 End Time        : {9}
 Window(seconds) : {10}
-IP              : {11}
-URL             : {12}
-ACL             : {13}
-Key/Secret      : {2}
-Payload         : {14}
-Algo            : {3}
-Salt            : {4}
-Session ID      : {15}
-Field Delimiter : {5}
-ACL Delimiter   : {6}
-Escape Early    : {7}
-Generating token...'''.format(self.token_type if self.token_type else '', #0
-                            self.token_name if self.token_name else '', #1
-                            self.key if self.key else '', #2
-                            self.algorithm if self.algorithm else '', #3
-                            self.salt if self.salt else '', #4
-                            self.field_delimiter if self.field_delimiter else '', #5
-                            ACL_DELIMITER if ACL_DELIMITER else '', #6
-                            self.escape_early if self.escape_early else '', #7
-                            start_time if start_time else '', #8
-                            end_time if end_time else '', #9
-                            window_seconds if window_seconds else '', #10
-                            ip if ip else '', #11
-                            url if url else '', #12
-                            acl if acl else '', #13
-                            payload if payload else '', #14
-                            session_id if session_id else '')) #15
+Field Delimiter : {11}
+ACL Delimiter   : {12}
+Escape Early    : {13}
+PATH            : {14}
+Generating token...'''.format(self.token_type if self.token_type else '',
+                            self.token_name if self.token_name else '',
+                            self.key if self.key else '',
+                            self.algorithm if self.algorithm else '',
+                            self.salt if self.salt else '',
+                            self.ip if self.ip else '',
+                            self.payload if self.payload else '',
+                            self.session_id if self.session_id else '',
+                            self.start_time if self.start_time else '',
+                            self.end_time if self.end_time else '',
+                            self.window_seconds if self.window_seconds else '',
+                            self.field_delimiter if self.field_delimiter else '',
+                            self.acl_delimiter if self.acl_delimiter else '',
+                            self.escape_early if self.escape_early else '',
+                            ('url: ' if is_url else 'acl: ') + path))
 
         hash_source = []
         new_token = []
 
-        if ip:
-            new_token.append('ip={0}'.format(self._escapeEarly(ip)))
+        if self.ip:
+            new_token.append('ip={0}'.format(self._escape_early(ip)))
 
-        if start_time:
-            new_token.append('st={0}'.format(start_time))
+        if self.start_time:
+            new_token.append('st={0}'.format(self.start_time))
 
-        new_token.append('exp={0}'.format(end_time))
+        new_token.append('exp={0}'.format(self.end_time))
 
-        if acl:
-            new_token.append('acl={0}'.format(acl))
+        if not is_url:
+            new_token.append('acl={0}'.format(path))
 
-        if session_id:
-            new_token.append('id={0}'.format(self._escapeEarly(session_id)))
+        if self.session_id:
+            new_token.append('id={0}'.format(self._escape_early(self.session_id)))
 
-        if payload:
-            new_token.append('data={0}'.format(self._escapeEarly(payload)))
+        if self.payload:
+            new_token.append('data={0}'.format(self._escape_early(self.payload)))
 
         hash_source = list(new_token)
-        if url and not acl:
-            hash_source.append('url={0}'.format(self._escapeEarly(url)))
+        if is_url:
+            hash_source.append('url={0}'.format(self._escape_early(path)))
 
         if self.salt:
             hash_source.append('salt={0}'.format(self.salt))
-
-        if self.algorithm.lower() not in ('sha256', 'sha1', 'md5'):
-            raise EdgeAuthError('Unknown algorithm')
 
         token_hmac = hmac.new(
             binascii.a2b_hex(self.key.encode()),
@@ -186,3 +176,15 @@ Generating token...'''.format(self.token_type if self.token_type else '', #0
         new_token.append('hmac={0}'.format(token_hmac))
 
         return self.field_delimiter.join(new_token)
+
+    def generate_acl_token(self, acl):
+        if not acl:
+            raise EdgeAuthError('You must provide acl')
+        elif isinstance(acl, list):
+            acl = self.acl_delimiter.join(acl)
+        return self._generate_token(acl, False)
+
+    def generate_url_token(self, url):
+        if not url:
+            raise EdgeAuthError('You must provide acl')
+        return self._generate_token(url, True)

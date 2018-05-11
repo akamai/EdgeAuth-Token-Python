@@ -8,14 +8,14 @@ with open('README.rst', 'r') as f:
 
 setup (
     name = 'akamai-edgeauth',
-    version = '0.1.1',
+    version = '0.2.0',
     description = 'Akamai Edge Authorization Token for Property Manager Behavior',
     long_description = readme,
     namespace_packages=['akamai'],
     packages=find_packages(exclude=['spike']),
     author = 'Astin Choi',
     author_email = 'asciineo@gmail.com',
-    url = 'https://github.com/AstinCHOI/Akamai-EdgeAuth-Python',
+    url = 'https://github.com/akamai/EdgeAuth-Token-Python',
     license='Apache 2.0',
     keywords='edgeauth auth token akamai openapi open api',
     classifiers=(
