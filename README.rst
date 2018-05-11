@@ -154,7 +154,7 @@ Test
 
 Others
 ------
-If you use the **Segmented Media Protection** behavior in AMD(Adaptive Media Delivery) Product, **tokenName(options.tokenName)** should be '**hdnts**'.
+If you use the **Segmented Media Protection** behavior in AMD(Adaptive Media Delivery) Product, **tokenName(token_name)** should be '**hdnts**'.
 
 .. image:: https://github.com/AstinCHOI/akamai-asset/blob/master/edgeauth/segmented_media_protection.png?raw=true
     :align: center
