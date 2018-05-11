@@ -186,5 +186,5 @@ Generating token...'''.format(self.token_type if self.token_type else '',
 
     def generate_url_token(self, url):
         if not url:
-            raise EdgeAuthError('You must provide acl')
+            raise EdgeAuthError('You must provide url')
         return self._generate_token(url, True)
