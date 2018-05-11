@@ -1,5 +1,5 @@
 EdgeAuth-Token-Python: Akamai Edge Authorization Token for Python
-===========================================================
+=================================================================
 
 .. image:: https://img.shields.io/pypi/v/akamai-edgeauth.svg
     :target: https://pypi.python.org/pypi/akamai-edgeauth
@@ -16,7 +16,6 @@ You can configure it in the Property Manager at https://control.akamai.com.
 It's a behavior which is Auth Token 2.0 Verification.  
 
 EdgeAuth-Token-Python supports Python 2.6–2.7 & 3.3–3.6 and runs great on PyPy.
-
 
 .. image:: https://github.com/AstinCHOI/akamai-asset/blob/master/edgeauth/edgeauth.png?raw=true
     :align: center
@@ -35,66 +34,64 @@ To install Akamai Edge Authorization Token for Python:
 Example
 -------
 
-    .. code-block:: python
+.. code-block:: python
 
-        from akamai.edgeauth import EdgeAuth, EdgeAuthError
-        import requests # just for this example
+    from akamai.edgeauth import EdgeAuth, EdgeAuthError
+    import requests # just for this example
 
-        ET_HOSTNAME = 'edgeauth.akamaized.net'
-        ET_ENCRYPTION_KEY = 'YourEncryptionKey' 
-        DURATION = 500 # seconds
+    ET_HOSTNAME = 'edgeauth.akamaized.net'
+    ET_ENCRYPTION_KEY = 'YourEncryptionKey' 
+    DURATION = 500 # seconds
 
 
 * ET_ENCRYPTION_KEY must be hexadecimal digit string with even-length.
 * Don't expose ET_ENCRYPTION_KEY on the public repository.
 
+
 **URL parameter option**
 
-    .. code-block:: python
+.. code-block:: python
 
-        # 1) Cookie
-        et = EdgeAuth((**{'key': ET_ENCRYPTION_KEY, 
-                          'window_seconds': DEFAULT_WINDOW_SECONDS}
-        token = et.generate_url_token("/akamai/edgeauth")
-        url = "http://{0}{1}".format(ET_HOSTNAME, "/akamai/edgeauth")
-        response = requests.get(url, cookies={et.token_name: token})
-        print(response) # Maybe not 403
+    # 1) Cookie
+    et = EdgeAuth(**{'key': ET_ENCRYPTION_KEY, 
+                      'window_seconds': DEFAULT_WINDOW_SECONDS})
+    token = et.generate_url_token("/akamai/edgeauth")
+    url = "http://{0}{1}".format(ET_HOSTNAME, "/akamai/edgeauth")
+    response = requests.get(url, cookies={et.token_name: token})
+    print(response) # Maybe not 403
 
-        # 2) Query string
-        token = et.generate_url_token("/akamai/edgeauth")
-        url = "http://{0}{1}?{2}={3}".format(ET_HOSTNAME, "/akamai/edgeauth", et.token_name, token)
-        response = requests.get(url)
-        print(response)
+    # 2) Query string
+    token = et.generate_url_token("/akamai/edgeauth")
+    url = "http://{0}{1}?{2}={3}".format(ET_HOSTNAME, "/akamai/edgeauth", et.token_name, token)
+    response = requests.get(url)
+    print(response)
 
-
-* 'Escape token input' option in the Property Manager corresponds to 'escape_early' in the code.  
-Escape token input (on) == escape_early (True)  
-Escape token input (off) == escape_early (False)  
-
+* 'Escape token input' option in the Property Manager corresponds to 'escape_early' in the code.
+    | Escape token input (on) == escape_early (True)
+    | Escape token input (off) == escape_early (False)
 * In [Example 2] for Query String, it's only okay for 'Ignore query string' option (on).
 * If you want to 'Ignore query string' option (off) using query string as your token, Please contact your Akamai representative.
 
 
 **ACL(Access Control List) parameter option**
 
-    .. code-block:: python
+.. code-block:: python
 
-        # 1) Header using *
-        et = EdgeAuth((**{'key': ET_ENCRYPTION_KEY, 
-                          'window_seconds': DEFAULT_WINDOW_SECONDS}
-        token = et.generate_acl_token("/akamai/edgeauth/list/*")
-        url = "http://{0}{1}".format(ET_HOSTNAME, "/akamai/edgeauth/list/something")
-        response = requests.get(url, headers={et.token_name: token})
-        print(response)
+    # 1) Header using *
+    et = EdgeAuth((**{'key': ET_ENCRYPTION_KEY, 
+                      'window_seconds': DEFAULT_WINDOW_SECONDS})
+    token = et.generate_acl_token("/akamai/edgeauth/list/*")
+    url = "http://{0}{1}".format(ET_HOSTNAME, "/akamai/edgeauth/list/something")
+    response = requests.get(url, headers={et.token_name: token})
+    print(response)
 
-        # 2) Cookie Delimited by '!'
-        acl_path = ["/akamai/edgeauth", "/akamai/edgeauth/list/*"]
-        token = at.generate_acl_token(acl_path)
-        # url = "http://{0}{1}".format(ET_HOSTNAME, "/akamai/edgeauth")
-        url = "http://{0}{1}".format(ET_HOSTNAME, "/akamai/edgeauth/list/something2")
-        response = requests.get(url, cookies={at.token_name: token})
-        print(response)
-    ::
+    # 2) Cookie Delimited by '!'
+    acl_path = ["/akamai/edgeauth", "/akamai/edgeauth/list/*"]
+    token = at.generate_acl_token(acl_path)
+    # url = "http://{0}{1}".format(ET_HOSTNAME, "/akamai/edgeauth")
+    url = "http://{0}{1}".format(ET_HOSTNAME, "/akamai/edgeauth/list/something2")
+    response = requests.get(url, cookies={at.token_name: token})
+    print(response)
 
 * ACL can use the wildcard(\*, ?) in the path.
 * Don't use '!' in your path because it's ACL Delimiter.
@@ -107,9 +104,10 @@ Usage
 
 .. code-block:: python
 
-    EdgeAuth(token_type=None, token_name='__token__', key=None, algorithm='sha256', salt=None,
-             ip=None, payload=None, session_id=None, start_time=None, end_time=None, window_seconds=None,
-             field_delimiter='~', acl_delimiter='!', escape_early=False, verbose=False)
+    class EdgeAuth(token_type=None, token_name='__token__', key=None, algorithm='sha256',
+                   salt=None, ip=None, payload=None, session_id=None, 
+                   start_time=None, end_time=None, window_seconds=None,
+                   field_delimiter='~', acl_delimiter='!', escape_early=False, verbose=False)
 
 ====================  ===================================================================================================
  Parameter             Description
@@ -134,8 +132,8 @@ Usage
 
 .. code-block:: python
 
-    generate_url_token(url_path)
-    generate_acl_token(acl_path)
+    def generate_url_token(url_path)
+    def generate_acl_token(acl_path)
 
     # Returns the authorization token string.
 
