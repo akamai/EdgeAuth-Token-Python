@@ -124,6 +124,7 @@ Usage
  end_time              When does this token expire? 'end_time' overrides 'window_seconds'
  window_seconds        How long is this token valid for?
  field_delimiter       Character used to delimit token body fields. [Default: ~]
+ acl_delimiter         Character used to delimit acl. [ Default: ! ]
  escape_early          Causes strings to be 'url' encoded before being used.
  verbose               Print all parameters.
 ====================  ===================================================================================================
