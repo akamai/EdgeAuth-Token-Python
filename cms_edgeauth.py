@@ -15,6 +15,7 @@ else:
 # Force the local timezone to be GMT.
 os.environ['TZ'] = 'GMT'
 
+
 class EdgeAuthError(Exception):
     def __init__(self, text):
         self._text = text
@@ -39,9 +40,6 @@ class EdgeAuth:
         if key is None or len(key) <= 0:
             raise EdgeAuthError('You must provide a secret in order to '
                 'generate a new token.')
-
-        if algorithm.lower() not in ('sha256', 'sha1', 'md5'):
-            raise EdgeAuthError('Unknown algorithm')
 
         self.token_type = token_type
         self.token_name = token_name
@@ -68,18 +66,21 @@ class EdgeAuth:
             return text
 
     def _generate_token(self, path, is_url):
-        if str(self.start_time).lower() == 'now':
-            self.start_time = int(time.mktime(time.gmtime()))
-        elif self.start_time:
+        start_time = self.start_time
+        end_time = self.end_time
+
+        if str(start_time).lower() == 'now':
+            start_time = int(time.mktime(time.gmtime()))
+        elif start_time:
             try:
-                if int(self.start_time) <= 0:
+                if int(start_time) <= 0:
                     raise EdgeAuthError('start_time must be ( > 0 )')    
             except:
                 raise EdgeAuthError('start_time must be numeric or now')
 
-        if self.end_time:
+        if end_time:
             try:
-                if int(self.end_time) <= 0:
+                if int(end_time) <= 0:
                     raise EdgeAuthError('end_time must be ( > 0 )')
             except:
                 raise EdgeAuthError('end_time must be numeric')
@@ -91,20 +92,20 @@ class EdgeAuth:
             except:
                 raise EdgeAuthError('window_seconds must be numeric')
                 
-        if self.end_time is None:
+        if end_time is None:
             if self.window_seconds:
-                if self.start_time is None:
+                if start_time is None:
                     # If we have a window_seconds without a start time,
                     # calculate the end time starting from the current time.
-                    self.end_time = int(time.mktime(time.gmtime())) + \
+                    end_time = int(time.mktime(time.gmtime())) + \
                         self.window_seconds
                 else:
-                    self.end_time = self.start_time + self.window_seconds
+                    end_time = start_time + self.window_seconds
             else:
                 raise EdgeAuthError('You must provide an expiration time or '
                     'a duration window ( > 0 )')
         
-        if self.start_time and (self.end_time <= self.start_time):
+        if start_time and (end_time <= start_time):
             raise EdgeAuthError('Token will have already expired.')
 
         if self.verbose:
@@ -133,8 +134,8 @@ Generating token...'''.format(self.token_type if self.token_type else '',
                             self.ip if self.ip else '',
                             self.payload if self.payload else '',
                             self.session_id if self.session_id else '',
-                            self.start_time if self.start_time else '',
-                            self.end_time if self.end_time else '',
+                            start_time if start_time else '',
+                            end_time if end_time else '',
                             self.window_seconds if self.window_seconds else '',
                             self.field_delimiter if self.field_delimiter else '',
                             self.acl_delimiter if self.acl_delimiter else '',
@@ -147,10 +148,10 @@ Generating token...'''.format(self.token_type if self.token_type else '',
         if self.ip:
             new_token.append('ip={0}'.format(self._escape_early(ip)))
 
-        if self.start_time:
-            new_token.append('st={0}'.format(self.start_time))
+        if start_time:
+            new_token.append('st={0}'.format(start_time))
 
-        new_token.append('exp={0}'.format(self.end_time))
+        new_token.append('exp={0}'.format(end_time))
 
         if not is_url:
             new_token.append('acl={0}'.format(path))
@@ -167,6 +168,9 @@ Generating token...'''.format(self.token_type if self.token_type else '',
 
         if self.salt:
             hash_source.append('salt={0}'.format(self.salt))
+
+        if self.algorithm.lower() not in ('sha256', 'sha1', 'md5'):
+            raise EdgeAuthError('Unknown algorithm')
 
         token_hmac = hmac.new(
             binascii.a2b_hex(self.key.encode()),
@@ -185,7 +189,7 @@ Generating token...'''.format(self.token_type if self.token_type else '',
 
     def generate_url_token(self, url):
         if not url:
-            raise EdgeAuthError('You must provide acl')
+            raise EdgeAuthError('You must provide url')
         return self._generate_token(url, True)
 
 

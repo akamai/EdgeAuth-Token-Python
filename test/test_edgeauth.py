@@ -226,6 +226,10 @@ class TestEdgeAuth(unittest.TestCase):
     def test_times(self):
         if not (sys.version_info[0] == 2 and sys.version_info[1] <= 6):
             att = EdgeAuth(key=ET_ENCRYPTION_KEY, window_seconds=DEFAULT_WINDOW_SECONDS, escape_early=False)
+            
+            self.assertEqual(None, att.start_time)
+            self.assertEqual(None, att.end_time)
+
             # start_time
             with self.assertRaises(EdgeAuthError):
                 att.start_time=-1

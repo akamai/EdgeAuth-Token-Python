@@ -113,15 +113,15 @@ Usage
  Parameter             Description
 ====================  ===================================================================================================
  token_type            Select a preset. (Not Supported Yet)  
- token_name            Parameter name for the new token. [Default: __token__]
+ token_name            Parameter name for the new token. [Default: '__token__']
  key                   Secret required to generate the token. It must be hexadecimal digit string with even-length.
- algorithm             Algorithm to use to generate the token. (sha1, sha256, or md5) [Default:sha256]
+ algorithm             Algorithm to use to generate the token. ('sha1', 'sha256', or 'md5') [Default: 'sha256']
  salt                  Additional data validated by the token but NOT included in the token body. (It will be deprecated)
  ip                    IP Address to restrict this token to. (Troublesome in many cases (roaming, NAT, etc) so not often used)
  payload               Additional text added to the calculated digest.
  session_id            The session identifier for single use tokens or other advanced cases.
  start_time            What is the start time? (Use string 'now' for the current time)
- end_time              When does this token expire? 'end_time' overrides 'window_seconds'
+ end_time              When does this token expire? end_time overrides window_seconds
  window_seconds        How long is this token valid for?
  field_delimiter       Character used to delimit token body fields. [Default: ~]
  acl_delimiter         Character used to delimit acl. [ Default: ! ]
@@ -133,18 +133,18 @@ Usage
 
 .. code-block:: python
 
-    def generate_url_token(url_path)
-    def generate_acl_token(acl_path)
+    def generate_url_token(url)
+    def generate_acl_token(acl)
 
     # Returns the authorization token string.
 
-+----------------+--------------------------------------------------------------------------------------------+
-| Parameter      | Description                                                                                |
-+================+============================================================================================+
-| url_path       | Single URL path (String)                                                                   |
-+----------------+--------------------------------------------------------------------------------------------+
-| acl_path       | Access control list using the wildcard(\*, ?) and can be delimited by '!' (String or Array)|
-+----------------+--------------------------------------------------------------------------------------------+
++-----------+--------------------------------------------------------------------------------------------------------+
+| Parameter | Description                                                                                            |
++===========+========================================================================================================+
+| url       | Single URL path (String)                                                                               |
++-----------+--------------------------------------------------------------------------------------------------------+
+| acl       | Access Control List can use the wildcard(\*, ?). It can be String (single path) or Array (multi paths) |
++-----------+--------------------------------------------------------------------------------------------------------+
 
 
 Test
@@ -154,7 +154,7 @@ Test
 
 Others
 ------
-If you use the **Segmented Media Protection** behavior in AMD(Adaptive Media Delivery) Product, **tokenName(token_name)** should be '**hdnts**'.
+If you use the **Segmented Media Protection** behavior in AMD(Adaptive Media Delivery) Product, **token_name** should be '**hdnts**'.
 
 .. image:: https://github.com/AstinCHOI/akamai-asset/blob/master/edgeauth/segmented_media_protection.png?raw=true
     :align: center
