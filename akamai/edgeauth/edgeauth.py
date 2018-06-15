@@ -146,7 +146,7 @@ Generating token...'''.format(self.token_type if self.token_type else '',
         new_token = []
 
         if self.ip:
-            new_token.append('ip={0}'.format(self._escape_early(ip)))
+            new_token.append('ip={0}'.format(self._escape_early(self.ip)))
 
         if start_time:
             new_token.append('st={0}'.format(start_time))
