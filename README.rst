@@ -41,7 +41,7 @@ Example
 
     ET_HOSTNAME = 'edgeauth.akamaized.net'
     ET_ENCRYPTION_KEY = 'YourEncryptionKey' 
-    DURATION = 500 # seconds
+    DEFAULT_WINDOW_SECONDS = 500 # seconds
 
 
 * ET_ENCRYPTION_KEY must be hexadecimal digit string with even-length.
@@ -78,7 +78,7 @@ Example
 .. code-block:: python
 
     # 1) Header using *
-    et = EdgeAuth((**{'key': ET_ENCRYPTION_KEY, 
+    et = EdgeAuth(**{'key': ET_ENCRYPTION_KEY, 
                       'window_seconds': DEFAULT_WINDOW_SECONDS})
     token = et.generate_acl_token("/akamai/edgeauth/list/*")
     url = "http://{0}{1}".format(ET_HOSTNAME, "/akamai/edgeauth/list/something")
@@ -87,10 +87,10 @@ Example
 
     # 2) Cookie Delimited by '!'
     acl_path = ["/akamai/edgeauth", "/akamai/edgeauth/list/*"]
-    token = at.generate_acl_token(acl_path)
+    token = et.generate_acl_token(acl_path)
     # url = "http://{0}{1}".format(ET_HOSTNAME, "/akamai/edgeauth")
     url = "http://{0}{1}".format(ET_HOSTNAME, "/akamai/edgeauth/list/something2")
-    response = requests.get(url, cookies={at.token_name: token})
+    response = requests.get(url, cookies={et.token_name: token})
     print(response)
 
 * ACL can use the wildcard(\*, ?) in the path.
