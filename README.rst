@@ -17,10 +17,6 @@ It's a behavior which is Auth Token 2.0 Verification.
 
 EdgeAuth-Token-Python supports Python 2.6–2.7 & 3.3–3.6 and runs great on PyPy.
 
-.. image:: https://github.com/AstinCHOI/akamai-asset/blob/master/edgeauth/edgeauth.png?raw=true
-    :align: center
-
-
 Installation
 ------------
 
@@ -155,10 +151,6 @@ Test
 Others
 ------
 If you use the **Segmented Media Protection** behavior in AMD(Adaptive Media Delivery) Product, **token_name** should be '**hdnts**'.
-
-.. image:: https://github.com/AstinCHOI/akamai-asset/blob/master/edgeauth/segmented_media_protection.png?raw=true
-    :align: center
-
 
 Command
 -------
